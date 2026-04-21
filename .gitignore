@@ -1,0 +1,29 @@
+# Dépendances
+node_modules/
+vendor/
+
+# Environnement
+.env
+.env.local
+.env.*.local
+
+# Build
+dist/
+build/
+.next/
+public/hot/
+
+# Cache
+.cache/
+.phpunit.result.cache
+*.log
+storage/logs/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
