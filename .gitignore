@@ -1,23 +1,28 @@
 # Dépendances
 node_modules/
-vendor/
 
-# Environnement
+# Environnement — jamais commité
 .env
 .env.local
 .env.*.local
 
-# Build
+# Expo / React Native
+.expo/
+expo-env.d.ts
 dist/
+web-build/
+android/
+ios/
+
+# NativeWind
+.nativewind/
+
+# Build
 build/
-.next/
-public/hot/
 
 # Cache
 .cache/
-.phpunit.result.cache
 *.log
-storage/logs/
 
 # OS
 .DS_Store

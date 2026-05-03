@@ -1,0 +1,90 @@
+# Design System — App Finance UEMOA
+
+**Date de création :** 2026-05-01
+**Source :** 24 spécifications de pages (Phase 4 — Specify)
+**Méthode :** Whiteport Design Studio (WDS)
+
+---
+
+## Tokens
+
+| Fichier | Contenu | Statut |
+|---------|---------|--------|
+| [Typography](tokens/typography.md) | 9 tokens taille, 6 tokens poids, associations sémantiques | Extrait |
+| [Spacing](tokens/spacing.md) | 5 tokens espacement, conteneurs, safe areas | Extrait |
+| [Colors](tokens/colors.md) | 14 rôles de couleur, palette sémantique, mapping composants | Extrait (valeurs hex en Phase Visual) |
+| [Interactions](tokens/interactions.md) | Animations, transitions, gestes, patterns formulaires | Extrait |
+
+---
+
+## Composants
+
+| Fichier | Type | Usages | Statut |
+|---------|------|--------|--------|
+| [PageHeader](components/page-header.component.md) | Layout | 24 specs | Extrait |
+| [PrimaryButton](components/primary-button.component.md) | Action | 15+ specs | Extrait |
+| [Card](components/card.component.md) | Contenu (5 variantes) | 10+ specs | Extrait |
+| [Input](components/input.component.md) | Formulaire (text, email, password, number) | 12 specs | Extrait |
+| [SecondaryButton + TextLink](components/secondary-actions.component.md) | Actions secondaire & tertiaire | 11 specs | Extrait |
+| [SelectionChips](components/selection-chips.component.md) | Sélection exclusive (grid / scroll) | 7 specs | Extrait |
+| [EmptyState](components/empty-state.component.md) | État vide avec CTA | 5 specs | Extrait |
+| [Toast](components/toast.component.md) | Confirmation non-bloquante | 5 specs | Extrait |
+| — | ProgressBar | 3 specs | À définir au fil du code |
+| — | ToggleSwitch | 3 specs | À définir au fil du code |
+| — | LineChart | 2 specs | À définir au fil du code |
+| — | MonthSelector | 2 specs | À définir au fil du code |
+| — | DynamicPreviewCard | 3 specs | → Variante de Card (preview) |
+| — | ListItem (swipeable) | 4 specs | → Variante de Card (list-item) |
+| — | DatePicker | 2 specs | À définir au fil du code |
+| — | Avatar | 2 specs | À définir au fil du code |
+| — | SkeletonLoader | 4 specs | À définir au fil du code |
+
+---
+
+## Composants Uniques (pas dans le Design System)
+
+Ces composants n'apparaissent qu'une seule fois — ils restent inline dans leur spec.
+
+| Composant | Spec | Raison |
+|-----------|------|--------|
+| GaugeScore | 01.6 | Spécifique au dashboard |
+| ChatInterface | 06.1 | Spécifique à l'assistant IA |
+| ComparisonTable | 09.3 | Spécifique à l'abonnement |
+| Timeline | 04.3 | Spécifique au plan remboursement |
+| IntegrationRow | 09.2 | Spécifique aux paramètres |
+| NumericDisplay | 02.1 | Spécifique à la saisie dépense |
+| Divider "ou" | 01.2 | Spécifique à l'inscription |
+| Badge | 09.3 | Spécifique à l'abonnement |
+
+---
+
+## Navigation Bar
+
+Définie dans la spec 01.6 (Dashboard), appliquée sur toutes les pages post-onboarding.
+
+| Onglet | Label FR | Label EN | Route |
+|--------|----------|----------|-------|
+| Accueil | Accueil | Home | `/accueil` |
+| Dépenses | Dépenses | Expenses | `/depenses` |
+| Objectifs | Objectifs | Goals | `/objectifs` |
+| Assistant | Assistant | Assistant | `/assistant` |
+| Profil | Profil | Profile | `/profil` |
+
+**Pages SANS navigation bar :** Onboarding (01.1-01.5), modales (02.1, 04.2, 05.2), flux simulation (03.1, 03.2)
+
+---
+
+## Statistiques
+
+- **148** Object IDs à travers 24 specs
+- **9** tokens typographiques
+- **5** tokens d'espacement
+- **14** rôles de couleur
+- **6** patterns d'interaction récurrents
+- **8** composants Tier 1+2 extraits (PageHeader, PrimaryButton, Card, Input, SecondaryButton, TextLink, SelectionChips, EmptyState, Toast)
+- **7** composants Tier 3 à définir au fil du code
+- **8** composants uniques (inline)
+
+---
+
+_Généré avec le framework Whiteport Design Studio (WDS)_
