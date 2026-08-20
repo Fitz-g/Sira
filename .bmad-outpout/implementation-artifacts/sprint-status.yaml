@@ -1,0 +1,101 @@
+# generated: 2026-08-20
+# last_updated: 2026-08-20
+# project: Sira
+# project_key: NOKEY
+# tracking_system: file-system
+# story_location: .bmad-outpout/implementation-artifacts
+
+# STATUS DEFINITIONS:
+# ==================
+# Epic Status:
+#   - backlog: Epic pas encore démarré
+#   - in-progress: Epic en cours
+#   - done: Toutes les stories de l'epic sont terminées
+#
+# Epic Status Transitions:
+#   - backlog → in-progress: automatiquement à la création de la première story
+#   - in-progress → done: manuellement quand toutes les stories sont 'done'
+#
+# Story Status:
+#   - backlog: la story n'existe que dans le fichier epics
+#   - ready-for-dev: le fichier de story est créé
+#   - in-progress: développement en cours
+#   - review: prêt pour la revue de code
+#   - done: terminé
+#
+# Retrospective Status:
+#   - optional: peut être menée, sans obligation
+#   - done: menée
+#
+# WORKFLOW NOTES:
+# ===============
+# - Un epic passe en 'in-progress' dès la création de sa première story
+# - Plusieurs stories peuvent avancer en parallèle
+# - Le SM crée la story suivante après que la précédente soit 'done',
+#   pour y intégrer les enseignements
+# - Le dev passe la story en 'review', puis lance la revue de code
+#
+# ÉTAT PARTICULIER DE CE PROJET — 2026-08-20 :
+# ============================================
+# Deux écarts avec le déroulement normal de la méthode, à connaître :
+#
+# 1. epics.md ne contient AUCUNE story. Le workflow bmad-create-epics-and-stories
+#    s'est arrêté après step-02-design-epics ; la décomposition n'a jamais eu
+#    lieu. Ce fichier ne liste donc que les 8 epics.
+#
+# 2. Du code existe déjà, écrit hors de la boucle stories. Les epics 1 et 3 sont
+#    marqués 'in-progress' pour refléter la réalité, sans qu'aucune story ne les
+#    documente :
+#      - Epic 1 : écran d'accueil et les trois étapes d'onboarding sont faits.
+#        Inscription et connexion sont des ébauches, le dashboard est provisoire.
+#      - Epic 3 : moteur de simulation, écran 03.1 et écran 03.2 sont faits.
+#        Restent la sauvegarde de scénario (FR23), la simulation sans compte
+#        (FR24) et le partage (FR57).
+
+generated: 2026-08-20
+last_updated: 2026-08-20
+project: Sira
+project_key: NOKEY
+tracking_system: file-system
+story_location: .bmad-outpout/implementation-artifacts
+
+development_status:
+  # Epic 1 — Fondations, Authentification & Onboarding
+  # FR01-FR11, FR50, FR55
+  epic-1: in-progress
+  epic-1-retrospective: optional
+
+  # Epic 2 — Suivi des Dépenses, Budget & Santé Financière
+  # FR12-FR18, FR51-FR54, FR56
+  epic-2: backlog
+  epic-2-retrospective: optional
+
+  # Epic 3 — Simulateur Financier UEMOA
+  # FR19-FR25, FR57
+  epic-3: in-progress
+  epic-3-retrospective: optional
+
+  # Epic 4 — Gestion des Dettes & Plan de Remboursement
+  # FR26-FR31
+  epic-4: backlog
+  epic-4-retrospective: optional
+
+  # Epic 5 — Objectifs d'Épargne
+  # FR32-FR36
+  epic-5: backlog
+  epic-5-retrospective: optional
+
+  # Epic 6 — Notifications & Engagement
+  # FR43-FR46
+  epic-6: backlog
+  epic-6-retrospective: optional
+
+  # Epic 7 — Abonnement Premium & Paiements Mobile Money
+  # FR37-FR42
+  epic-7: backlog
+  epic-7-retrospective: optional
+
+  # Epic 8 — Administration & Monitoring Plateforme
+  # FR47-FR49
+  epic-8: backlog
+  epic-8-retrospective: optional
