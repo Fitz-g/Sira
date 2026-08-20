@@ -45,8 +45,15 @@ abstract final class AppSizes {
   /// Hauteur d'un champ de saisie.
   static const inputHeight = 52.0;
 
-  /// Hauteur d'un chip.
+  /// Hauteur d'un chip sur une ligne (défilement horizontal).
   static const chipHeight = 40.0;
+
+  /// Hauteur d'un chip en grille — accueille deux lignes de texte.
+  ///
+  /// Uniforme pour tous les chips d'une grille : les libellés longs occupent
+  /// deux lignes, les courts restent centrés, et les rangées gardent un
+  /// alignement net.
+  static const chipHeightGrid = 54.0;
 
   /// Hauteur de la barre de navigation basse.
   static const navBarHeight = 56.0;

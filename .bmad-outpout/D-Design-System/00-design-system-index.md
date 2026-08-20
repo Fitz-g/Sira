@@ -46,8 +46,10 @@ Les composants sont implémentés dans `lib/shared/widgets/` (Flutter/Dart) :
 | EmptyState | `empty_state.dart` |
 | Toast | `app_toast.dart` |
 | *(feedback tactile partagé)* | `pressable_scale.dart` |
-| — | ProgressBar | 3 specs | À définir au fil du code |
-| — | ToggleSwitch | 3 specs | À définir au fil du code |
+| StepProgressBar | Progression d'un parcours en étapes | 3 specs | Extrait — `step_progress_bar.dart` |
+| LabeledSwitch | Interrupteur avec libellé, ligne entière tappable | 3 specs | Extrait — `labeled_switch.dart` |
+| SelectionCardGrid | Cards à sélection exclusive, grille 2 colonnes | 1 spec | Extrait — `selection_card_grid.dart` |
+| DurationSlider | Sélecteur de durée, libellé mois/années automatique | 1 spec | Extrait — `duration_slider.dart` |
 | — | LineChart | 2 specs | À définir au fil du code |
 | — | MonthSelector | 2 specs | À définir au fil du code |
 | — | DynamicPreviewCard | 3 specs | → Variante de Card (preview) |

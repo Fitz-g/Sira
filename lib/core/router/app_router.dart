@@ -3,6 +3,10 @@ import 'package:go_router/go_router.dart';
 import '../../features/auth/presentation/login_screen.dart';
 import '../../features/auth/presentation/register_screen.dart';
 import '../../features/auth/presentation/welcome_screen.dart';
+import '../../features/dashboard/presentation/dashboard_screen.dart';
+import '../../features/onboarding/presentation/onboarding_goal_screen.dart';
+import '../../features/onboarding/presentation/onboarding_profile_screen.dart';
+import '../../features/onboarding/presentation/onboarding_situation_screen.dart';
 import '../../features/simulation/domain/simulation_models.dart';
 import '../../features/simulation/presentation/simulation_result_screen.dart';
 import '../../features/simulation/presentation/simulator_screen.dart';
@@ -12,6 +16,13 @@ abstract final class Routes {
   static const welcome = '/';
   static const register = '/inscription';
   static const login = '/connexion';
+
+  static const onboardingProfile = '/onboarding/profil';
+  static const onboardingSituation = '/onboarding/situation';
+  static const onboardingGoal = '/onboarding/objectif';
+
+  static const dashboard = '/accueil';
+
   static const simulator = '/simulateur';
   static const simulationResult = '/simulateur/resultat';
 }
@@ -30,6 +41,22 @@ final appRouter = GoRouter(
     GoRoute(
       path: Routes.login,
       builder: (context, state) => const LoginScreen(),
+    ),
+    GoRoute(
+      path: Routes.onboardingProfile,
+      builder: (context, state) => const OnboardingProfileScreen(),
+    ),
+    GoRoute(
+      path: Routes.onboardingSituation,
+      builder: (context, state) => const OnboardingSituationScreen(),
+    ),
+    GoRoute(
+      path: Routes.onboardingGoal,
+      builder: (context, state) => const OnboardingGoalScreen(),
+    ),
+    GoRoute(
+      path: Routes.dashboard,
+      builder: (context, state) => const DashboardScreen(),
     ),
     GoRoute(
       path: Routes.simulator,

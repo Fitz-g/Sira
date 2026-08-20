@@ -54,6 +54,9 @@ class SelectionChips extends StatelessWidget {
             option: options[index],
             isSelected: options[index].id == selectedId,
             onTap: () => onSelected(options[index].id),
+            // Le défilement horizontal impose une ligne unique.
+            maxLines: 1,
+            height: AppSizes.chipHeight,
           ),
         ),
       );
@@ -74,6 +77,7 @@ class SelectionChips extends StatelessWidget {
                   isSelected: option.id == selectedId,
                   onTap: () => onSelected(option.id),
                   expand: true,
+                  height: AppSizes.chipHeightGrid,
                 ),
               ),
           ],
@@ -89,12 +93,23 @@ class _Chip extends StatelessWidget {
     required this.isSelected,
     required this.onTap,
     this.expand = false,
+    this.maxLines = 2,
+    required this.height,
   });
 
   final ChipOption option;
   final bool isSelected;
   final VoidCallback onTap;
   final bool expand;
+
+  /// Au-delà d'une ligne, le libellé se replie au lieu d'être tronqué. Une
+  /// fourchette de revenus coupée en plein milieu n'apprend rien à
+  /// l'utilisateur.
+  final int maxLines;
+
+  /// Identique pour tous les chips d'un même groupe, pour que les rangées
+  /// restent alignées quelle que soit la longueur des libellés.
+  final double height;
 
   @override
   Widget build(BuildContext context) {
@@ -108,8 +123,8 @@ class _Chip extends StatelessWidget {
         behavior: HitTestBehavior.opaque,
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 150),
-          height: AppSizes.chipHeight,
-          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+          height: height,
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
           decoration: BoxDecoration(
             color: isSelected ? AppColors.primaryLight : AppColors.neutral100,
             borderRadius: BorderRadius.circular(AppSizes.radiusChip),
@@ -129,13 +144,15 @@ class _Chip extends StatelessWidget {
               Flexible(
                 child: Text(
                   option.label,
+                  textAlign: TextAlign.center,
                   style: AppTypography.headingXxs.copyWith(
                     fontWeight: FontWeight.w500,
+                    height: 1.25,
                     color: isSelected
                         ? AppColors.primary
                         : AppColors.neutral700,
                   ),
-                  maxLines: 1,
+                  maxLines: maxLines,
                   overflow: TextOverflow.ellipsis,
                 ),
               ),

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
+import '../../../core/router/app_router.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_typography.dart';
@@ -7,8 +9,10 @@ import '../../../shared/widgets/widgets.dart';
 
 /// 01.2 — Inscription.
 ///
-/// Écran encore vide : la spécification prévoit Google SSO, un séparateur,
-/// puis un formulaire à trois champs (nom, email, mot de passe).
+/// Écran encore à construire : Google SSO, séparateur, puis trois champs
+/// (nom, email, mot de passe). Il n'y a rien à authentifier tant qu'aucun
+/// backend n'est branché ; le bouton laisse simplement continuer vers
+/// l'onboarding, pour que le parcours soit praticable de bout en bout.
 class RegisterScreen extends StatelessWidget {
   const RegisterScreen({super.key});
 
@@ -24,17 +28,34 @@ class RegisterScreen extends StatelessWidget {
               variant: PageHeaderVariant.hero,
               leading: HeaderLeadingAction.back,
             ),
-            Expanded(
+            const Expanded(
               child: Center(
                 child: Padding(
-                  padding: const EdgeInsets.all(AppSizes.paddingPage),
-                  child: Text(
-                    'Formulaire d’inscription — à construire\n(spécification 01.2)',
-                    style: AppTypography.headingXxs
-                        .copyWith(color: AppColors.neutral500),
-                    textAlign: TextAlign.center,
+                  padding: EdgeInsets.all(AppSizes.paddingPage),
+                  child: AppCard(
+                    variant: AppCardVariant.info,
+                    child: Text(
+                      'Formulaire d’inscription à construire — '
+                      'spécification 01.2.\n\n'
+                      'Il demandera la création d’un projet Supabase pour '
+                      'authentifier réellement.',
+                      style: AppTypography.headingXs,
+                    ),
                   ),
                 ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(
+                AppSizes.paddingPage,
+                0,
+                AppSizes.paddingPage,
+                AppSpacing.md,
+              ),
+              child: PrimaryButton(
+                label: 'Continuer vers l’onboarding  →',
+                // TODO(auth): remplacer par la vraie création de compte.
+                onPressed: () => context.push(Routes.onboardingProfile),
               ),
             ),
           ],
