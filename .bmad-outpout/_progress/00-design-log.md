@@ -65,3 +65,4 @@ _(vide — prêt à démarrer)_
 | 2026-05-03 | Design System [M] — Composants Tier 1 extraits : PageHeader (3 variantes), PrimaryButton (4 états), Card (5 variantes : metric, info, preview, list-item, recap). |
 | 2026-05-03 | Design System [M] — Composants Tier 2 extraits : Input (4 variantes), SecondaryButton + TextLink, SelectionChips (2 layouts), EmptyState, Toast. Design System fondation complète — prêt pour le coding. |
 | 2026-08-20 | Bascule React Native → Flutter. Design System, specs et FRs conservés ; architecture technique, tokens et composants réécrits en Dart. Écran 01.1 Welcome implémenté. |
+| 2026-08-20 | Moteur de simulation et écrans 03.1 / 03.2 implémentés. Correction spec 01.6 : ajout du bouton « Simuler » aux actions rapides — le scénario 03 le supposait, la spec de l'écran ne le portait pas, le simulateur était inatteignable. Décision DEC-01 ouverte : l'entrée du FR24 (simulation sans compte) n'a jamais été dessinée. |
