@@ -7,6 +7,45 @@
 
 ---
 
+## Décisions en attente
+
+### DEC-01 — Par où entre-t-on dans le simulateur sans compte ? (FR24)
+
+**Ouverte le :** 2026-08-20
+**Bloque :** rien pour l'instant — le simulateur est joignable depuis le
+dashboard une fois l'utilisateur inscrit (correction apportée à la spec 01.6).
+
+**Le FR24 dit :** « Un utilisateur non-inscrit peut accéder à 1 simulation
+complète sans compte, sans sauvegarde ni comparaison de scénarios. »
+
+**Ce qui manque :** aucune spécification d'écran ne dit d'où part ce parcours.
+L'architecture a prévu une route `/simulateur-decouverte` sans jamais désigner
+le lien qui y mène.
+
+**Le seul endroit possible est l'écran d'accueil 01.1**, puisque c'est le seul
+écran vu par un visiteur non inscrit. Or cet écran porte un objectif chiffré :
+70 % de conversion vers l'inscription. Y ajouter une sortie concurrente n'est
+pas un détail d'implémentation.
+
+**À trancher :**
+
+| Question | Enjeu |
+|----------|-------|
+| Ajouter un lien sur l'accueil, ou renoncer au FR24 au MVP ? | Acquisition contre conversion |
+| Si on l'ajoute : lien discret sous le CTA, ou choix mis en avant ? | Le CTA doit rester l'inscription |
+| Que se passe-t-il après la simulation ? | Le FR24 suppose une bascule vers l'inscription au moment où la valeur vient d'être démontrée |
+| Comment limiter à 1 simulation sans compte ? | Sans compte, pas d'identité — stockage local contournable |
+
+**Argument pour :** le simulateur est le différenciateur. Le faire essayer avant
+l'inscription est le meilleur argument de conversion possible.
+
+**Argument contre :** un visiteur qui simule et repart sans compte est perdu, et
+l'écran d'accueil est mesuré sur sa conversion.
+
+**Prochaine étape :** décider avec Fitz avant de construire le lot Inscription.
+
+---
+
 ## IDEA-01 — Décomposition et compréhension du salaire
 
 **Capturé le :** 2026-08-20
