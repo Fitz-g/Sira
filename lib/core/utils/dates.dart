@@ -22,6 +22,18 @@ abstract final class Dates {
         end: DateTime(date.year, date.month + 1, 0),
       );
 
+  /// Durée en toutes lettres : `8 mois`, `1 an`, `2 ans et 6 mois`.
+  static String durationLabel(int months) {
+    if (months < 12) return '$months mois';
+
+    final years = months ~/ 12;
+    final remainder = months % 12;
+    final yearsLabel = years == 1 ? '1 an' : '$years ans';
+
+    if (remainder == 0) return yearsLabel;
+    return '$yearsLabel et $remainder mois';
+  }
+
   /// Nombre de mois entre deux dates, minimum 1.
   static int monthsBetween(DateTime from, DateTime to) {
     final months =

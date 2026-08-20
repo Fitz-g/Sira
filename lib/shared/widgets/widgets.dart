@@ -8,6 +8,7 @@ library;
 export 'app_card.dart';
 export 'app_input.dart';
 export 'app_toast.dart';
+export 'duration_slider.dart';
 export 'empty_state.dart';
 export 'page_header.dart';
 export 'pressable_scale.dart';

@@ -36,22 +36,40 @@ class AppCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final isInfo = variant == AppCardVariant.info;
 
+    // Le liseré de la variante info est un élément posé à l'intérieur de la
+    // card, et non une bordure : Flutter refuse une bordure aux côtés de
+    // couleurs différentes dès qu'il y a des coins arrondis.
     final container = Container(
       width: double.infinity,
-      padding: padding ?? const EdgeInsets.all(AppSizes.paddingCard),
       decoration: BoxDecoration(
         color: isInfo ? AppColors.primaryLight : AppColors.surfaceCard,
         borderRadius: BorderRadius.circular(AppSizes.radiusCard),
-        border: Border(
-          top: BorderSide(color: _borderColor(isInfo)),
-          right: BorderSide(color: _borderColor(isInfo)),
-          bottom: BorderSide(color: _borderColor(isInfo)),
-          left: isInfo
-              ? const BorderSide(color: AppColors.primary, width: 4)
-              : BorderSide(color: _borderColor(isInfo)),
+        border: Border.all(color: _borderColor(isInfo)),
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(AppSizes.radiusCard - 1),
+        // IntrinsicHeight donne au Row une hauteur bornée — sans quoi le
+        // liseré, qui doit s'étirer, reçoit une contrainte infinie.
+        child: IntrinsicHeight(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              if (isInfo)
+                const SizedBox(
+                  width: 4,
+                  child: ColoredBox(color: AppColors.primary),
+                ),
+              Expanded(
+                child: Padding(
+                  padding:
+                      padding ?? const EdgeInsets.all(AppSizes.paddingCard),
+                  child: child,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
-      child: child,
     );
 
     if (onTap == null) return container;
