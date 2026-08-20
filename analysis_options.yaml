@@ -10,6 +10,13 @@ analyzer:
     - '**/*.freezed.dart'
     - '_bmad/**'
     - '.bmad-outpout/**'
+    - build/**
+    - android/**
+    - ios/**
+    - web/**
+    - windows/**
+    - macos/**
+    - linux/**
 
 linter:
   rules:

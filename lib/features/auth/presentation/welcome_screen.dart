@@ -27,11 +27,11 @@ class WelcomeScreen extends StatelessWidget {
           child: Column(
             children: [
               // S1 — Illustration, environ 45 % de la hauteur.
-              Expanded(
+              const Expanded(
                 flex: 45,
                 child: Padding(
-                  padding: const EdgeInsets.only(top: AppSpacing.lg),
-                  child: const WelcomeIllustration(),
+                  padding: EdgeInsets.only(top: AppSpacing.lg),
+                  child: WelcomeIllustration(),
                 ),
               ),
 
@@ -41,7 +41,7 @@ class WelcomeScreen extends StatelessWidget {
                 flex: 55,
                 child: Column(
                   children: [
-                    Text(
+                    const Text(
                       'Ton argent, maîtrisé.',
                       style: AppTypography.heading2xl,
                       textAlign: TextAlign.center,
