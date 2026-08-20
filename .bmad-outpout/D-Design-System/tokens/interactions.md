@@ -71,26 +71,25 @@
 
 ---
 
-## Implémentation React Native
+## Implémentation Flutter
 
-```typescript
-export const animations = {
-  pressFeedback: {
-    opacity: 0.85,
-    scale: 0.98,
-    duration: 150,
-  },
-  disabledOpacity: 0.4,
-  toastDuration: 2000,
-  toggleDuration: 200,
-} as const;
+`lib/core/theme/app_motion.dart`
 
-export const transitions = {
-  push: 'slide_from_right',
-  pop: 'slide_from_left',
-  modal: 'slide_from_bottom',
-} as const;
+```dart
+abstract final class AppMotion {
+  static const pressDuration = Duration(milliseconds: 150);
+  static const pressScale    = 0.98;
+  static const pressOpacity  = 0.85;
+  static const disabledOpacity = 0.4;
+  static const toastDuration = Duration(milliseconds: 2000);
+  static const toastTransition = Duration(milliseconds: 200);
+  static const toggleDuration = Duration(milliseconds: 200);
+}
 ```
+
+Le feedback tactile est centralisé dans le widget `PressableScale`
+(`lib/shared/widgets/pressable_scale.dart`) : tout élément tappable en hérite,
+ce qui garantit un comportement identique partout.
 
 ---
 

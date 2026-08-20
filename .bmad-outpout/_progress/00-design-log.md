@@ -61,3 +61,7 @@ _(vide — prêt à démarrer)_
 | 2026-04-04 | Phase 2 Trigger Map complété — 4 personas, 9 forces prioritaires |
 | 2026-04-04 | Phase 3 UX Scenarios complété — 9 scénarios, 25 vues |
 | 2026-04-04 | Phase 4 UX Design initialisé |
+| 2026-05-01 | Design System [M] — Tokens extraits : typography (9), spacing (5), colors (14 rôles), interactions (6 patterns). 19 composants partagés identifiés, à extraire. |
+| 2026-05-03 | Design System [M] — Composants Tier 1 extraits : PageHeader (3 variantes), PrimaryButton (4 états), Card (5 variantes : metric, info, preview, list-item, recap). |
+| 2026-05-03 | Design System [M] — Composants Tier 2 extraits : Input (4 variantes), SecondaryButton + TextLink, SelectionChips (2 layouts), EmptyState, Toast. Design System fondation complète — prêt pour le coding. |
+| 2026-08-20 | Bascule React Native → Flutter. Design System, specs et FRs conservés ; architecture technique, tokens et composants réécrits en Dart. Écran 01.1 Welcome implémenté. |

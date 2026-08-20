@@ -29,6 +29,23 @@
 | [SelectionChips](components/selection-chips.component.md) | Sélection exclusive (grid / scroll) | 7 specs | Extrait |
 | [EmptyState](components/empty-state.component.md) | État vide avec CTA | 5 specs | Extrait |
 | [Toast](components/toast.component.md) | Confirmation non-bloquante | 5 specs | Extrait |
+
+### Correspondance avec le code
+
+Les composants sont implémentés dans `lib/shared/widgets/` (Flutter/Dart) :
+
+| Spécification | Fichier |
+|---------------|---------|
+| PageHeader | `page_header.dart` |
+| PrimaryButton | `primary_button.dart` |
+| SecondaryButton | `secondary_button.dart` |
+| TextLink | `text_link.dart` |
+| Input | `app_input.dart` |
+| SelectionChips | `selection_chips.dart` |
+| Card + MetricRow + RecapRow | `app_card.dart` |
+| EmptyState | `empty_state.dart` |
+| Toast | `app_toast.dart` |
+| *(feedback tactile partagé)* | `pressable_scale.dart` |
 | — | ProgressBar | 3 specs | À définir au fil du code |
 | — | ToggleSwitch | 3 specs | À définir au fil du code |
 | — | LineChart | 2 specs | À définir au fil du code |

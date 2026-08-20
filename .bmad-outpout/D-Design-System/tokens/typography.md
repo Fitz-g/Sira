@@ -69,29 +69,23 @@
 
 ---
 
-## Implémentation React Native
+## Implémentation Flutter
 
-```typescript
-export const typography = {
-  'heading-4xl': { fontSize: 56, lineHeight: 67 },
-  'heading-3xl': { fontSize: 44, lineHeight: 53 },
-  'heading-2xl': { fontSize: 36, lineHeight: 43 },
-  'heading-xl':  { fontSize: 30, lineHeight: 36 },
-  'heading-lg':  { fontSize: 24, lineHeight: 29 },
-  'heading-md':  { fontSize: 20, lineHeight: 24 },
-  'heading-sm':  { fontSize: 18, lineHeight: 22 },
-  'heading-xs':  { fontSize: 16, lineHeight: 19 },
-  'heading-xxs': { fontSize: 14, lineHeight: 17 },
-} as const;
+`lib/core/theme/app_typography.dart` — chaque token porte taille, graisse et
+hauteur de ligne ; la couleur reste surchargeable via `copyWith`.
 
-export const fontWeight = {
-  'weight-black':    '900',
-  'weight-bold':     '700',
-  'weight-semibold': '600',
-  'weight-medium':   '500',
-  'weight-regular':  '400',
-  'weight-light':    '300',
-} as const;
+```dart
+abstract final class AppTypography {
+  static const heading4xl = TextStyle(fontSize: 56, fontWeight: FontWeight.w900, height: 1.2);
+  static const heading3xl = TextStyle(fontSize: 44, fontWeight: FontWeight.w900, height: 1.2);
+  static const heading2xl = TextStyle(fontSize: 36, fontWeight: FontWeight.w900, height: 1.2);
+  static const headingXl  = TextStyle(fontSize: 30, fontWeight: FontWeight.w700, height: 1.2);
+  static const headingLg  = TextStyle(fontSize: 24, fontWeight: FontWeight.w700, height: 1.2);
+  static const headingMd  = TextStyle(fontSize: 20, fontWeight: FontWeight.w600, height: 1.2);
+  static const headingSm  = TextStyle(fontSize: 18, fontWeight: FontWeight.w700, height: 1.2);
+  static const headingXs  = TextStyle(fontSize: 16, fontWeight: FontWeight.w400, height: 1.5);
+  static const headingXxs = TextStyle(fontSize: 14, fontWeight: FontWeight.w400, height: 1.5);
+}
 ```
 
 ---

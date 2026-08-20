@@ -82,25 +82,28 @@ Plus deux éléments sont proches, plus ils semblent liés. L'espacement encode 
 
 ---
 
-## Implémentation React Native
+## Implémentation Flutter
 
-```typescript
-export const spacing = {
-  'space-zero': 0,
-  'space-sm':   8,
-  'space-md':   16,
-  'space-lg':   24,
-  'space-xl':   32,
-} as const;
+`lib/core/theme/app_spacing.dart`
 
-export const containers = {
-  'padding-page':  20,
-  'padding-card':  16,
-  'radius-card':   12,
-  'radius-chip':   20,
-  'radius-input':  8,
-  'nav-bar-height': 56,
-} as const;
+```dart
+abstract final class AppSpacing {
+  static const zero = 0.0;
+  static const sm   = 8.0;
+  static const md   = 16.0;
+  static const lg   = 24.0;
+  static const xl   = 32.0;
+}
+
+abstract final class AppSizes {
+  static const paddingPage = 20.0;
+  static const paddingCard = 16.0;
+  static const radiusCard  = 12.0;
+  static const radiusChip  = 20.0;
+  static const radiusInput = 8.0;
+  static const navBarHeight = 56.0;
+  static const minTouchTarget = 44.0; // NFR-A1
+}
 ```
 
 ---

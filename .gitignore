@@ -1,28 +1,25 @@
-# Dépendances
-node_modules/
+# Dart / Flutter
+.dart_tool/
+.packages
+build/
+.flutter-plugins
+.flutter-plugins-dependencies
+pubspec.lock
+*.g.dart
+*.freezed.dart
+
+# Plateformes générées (recréées par `flutter create .`)
+/android/
+/ios/
+/macos/
+/linux/
+/windows/
+/web/
 
 # Environnement — jamais commité
+env.json
 .env
 .env.local
-.env.*.local
-
-# Expo / React Native
-.expo/
-expo-env.d.ts
-dist/
-web-build/
-android/
-ios/
-
-# NativeWind
-.nativewind/
-
-# Build
-build/
-
-# Cache
-.cache/
-*.log
 
 # OS
 .DS_Store
@@ -31,4 +28,5 @@ Thumbs.db
 # IDE
 .idea/
 .vscode/
+*.iml
 *.swp

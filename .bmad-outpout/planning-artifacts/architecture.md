@@ -19,6 +19,18 @@ _Ce document se construit de façon collaborative, étape par étape. Les sectio
 
 ---
 
+## Révision — 2026-08-20 : bascule vers Flutter
+
+Le framework client passe de **React Native + Expo** à **Flutter + Dart**, sur décision produit.
+
+**Ce qui change :** framework, langage, conventions de nommage, structure du projet, bibliothèques clientes, chaîne de build.
+
+**Ce qui ne change pas :** Supabase et son schéma, les politiques RLS, les Edge Functions, les frontières architecturales, la règle des montants en entiers, le principe du moteur de simulation pur et hors ligne, l'ensemble des 57 FRs et des NFRs.
+
+Les sections ci-dessous reflètent la stack Flutter. Les mentions résiduelles d'Expo dans l'historique du document sont caduques.
+
+---
+
 ## Analyse du Contexte Projet
 
 ### Vue d'ensemble des exigences
@@ -36,18 +48,19 @@ _Ce document se construit de façon collaborative, étape par étape. Les sectio
 - Scalabilité : 1 000 utilisateurs concurrents, extensible à 50 000 sans refactoring majeur
 
 **Complexité & Domaine :**
-- Domaine : Mobile App (React Native + Expo, TypeScript strict)
+- Domaine : Mobile App (Flutter + Dart)
 - Complexité : Haute — fintech, offline-first, moteur de simulation, paiements mobiles, sécurité données financières
 - Composants architecturaux estimés : 12–15
 
-### Contraintes Techniques (décidées dans le PRD)
+### Contraintes Techniques
 
-- React Native + Expo (TypeScript strict) — Android P1 (API 26+), iOS P2, Web P3
-- MMKV : stockage local chiffré pour données financières sensibles
-- TanStack Query : cache offline + file de mutations avec retry automatique
-- React Navigation v6+
-- Zustand ou Redux Toolkit (à décider)
-- Expo Updates : correctifs OTA sans validation store
+- Flutter + Dart — Android P1 (API 26+), iOS P2, Web P3
+- `flutter_secure_storage` : sessions JWT dans le Keystore / Keychain
+- `drift` (SQLite) : persistance locale chiffrée et file de mutations hors ligne
+- `go_router` : navigation déclarative
+- `flutter_riverpod` : état applicatif et état serveur
+- Distribution : builds signés via CI (pas d'équivalent OTA à la Expo Updates —
+  les correctifs passent par une publication store)
 
 ### Concernements Transversaux
 
@@ -65,40 +78,41 @@ _Ce document se construit de façon collaborative, étape par étape. Les sectio
 
 ### Domaine technologique
 
-Mobile App — React Native + Expo (TypeScript strict), décidé dans le PRD.
+Mobile App — Flutter + Dart, un seul codebase pour Android, iOS et Web.
 
-### Starter sélectionné : `create-expo-app` officiel (SDK 55)
+### Initialisation
 
-**Expo SDK 55** — React Native 0.83/0.84, New Architecture activée par défaut, Expo Router 4 intégré.
-
-**Commande d'initialisation :**
+Le projet est scaffoldé à la main (`pubspec.yaml`, `lib/`, thème, composants).
+Les dossiers de plateforme sont générés localement et non versionnés :
 
 ```bash
-npx create-expo-app@latest FinanceUEMOA
+flutter create . --platforms=android,ios --org com.sira
+flutter pub get
 ```
 
-**Décisions prises par le starter :**
-- TypeScript strict configuré
-- Expo Router v4 — navigation par fichiers (`/app/` = routes)
-- Structure de base : `/app`, `/components`, `/assets`
-- Hot reload, debug, build Android/iOS prêts
-- New Architecture (meilleure performance native, bridge JS supprimé)
+**Dépendances retenues :**
 
-**Dépendances additionnelles :**
+| Paquet | Rôle |
+|--------|------|
+| `flutter_riverpod` | État applicatif et état serveur — sûr à la compilation |
+| `go_router` | Navigation déclarative, deep links |
+| `supabase_flutter` | SDK officiel Supabase |
+| `flutter_secure_storage` | Sessions JWT (Keystore Android / Keychain iOS) |
+| `drift` + `sqlite3_flutter_libs` | SQLite typé — persistance et file de mutations hors ligne |
+| `intl` | Formatage FCFA et dates francophones |
+| `fl_chart` | Courbes de projection et historiques BRVM |
+| `sentry_flutter` | Crash reporting et traces |
 
-| Lib | Rôle |
-|-----|------|
-| `zustand` | État global — léger, adapté solo dev |
-| `@tanstack/react-query` | Cache + file de mutations offline |
-| `react-native-mmkv` | Stockage local chiffré (données financières) |
-| `nativewind` + `tailwindcss` | Style Tailwind sur mobile |
-| `zod` | Validation de toute donnée externe |
-| `react-hook-form` | Formulaires (onboarding, dépenses, simulation) |
-| `expo-notifications` | Push notifications (budget, dettes, rappels) |
-| `expo-local-authentication` | Biométrie optionnelle |
-| `expo-updates` | OTA — correctifs sans validation store |
+**Équivalences avec la stack précédente :**
 
-**Note :** L'initialisation du projet avec cette commande sera la première story d'implémentation.
+| React Native | Flutter |
+|--------------|---------|
+| Zustand | Riverpod |
+| TanStack Query | Riverpod `AsyncNotifier` |
+| MMKV | `flutter_secure_storage` + `drift` |
+| NativeWind / Tailwind | `ThemeData` + tokens Dart |
+| Reanimated | `AnimationController` (intégré) |
+| Zod + React Hook Form | `Form` + validateurs (intégrés) |
 
 ---
 
@@ -117,126 +131,151 @@ snake_case pour tout — tables, colonnes, foreign keys
 ❌ userId, monthlyAmount, createdAt
 ```
 
-**TypeScript / React Native :**
+**Dart :**
 ```
-camelCase   → variables et fonctions
-PascalCase  → composants, types, interfaces, enums
-SCREAMING_SNAKE_CASE → constantes globales
-✅ const userId, function getMonthlyBudget(), <BudgetCard />, type DebtPlan, MAX_RETRY_COUNT
-❌ const user_id, function get_monthly_budget()
+camelCase   → variables, fonctions, constantes
+PascalCase  → classes, widgets, enums, typedefs
+_leadingUnderscore → membres et classes privés au fichier
+✅ final userId, int monthlyBudget(), class BudgetCard, enum DebtStrategy
+❌ final user_id, const MAX_RETRY_COUNT
 ```
 
 **Fichiers et dossiers :**
 ```
-kebab-case  → tous les fichiers et dossiers
-PascalCase  → fichiers de composants React uniquement
-✅ /services/debt-calculator.ts, /components/BudgetCard.tsx, /hooks/useSimulation.ts
-❌ /services/debtCalculator.ts, /components/budget-card.tsx
+snake_case → tous les fichiers et dossiers, sans exception
+✅ lib/features/debts/debt_calculator.dart, lib/shared/widgets/app_card.dart
+❌ lib/features/debts/debtCalculator.dart, lib/shared/widgets/AppCard.dart
 ```
+
+La correspondance avec la base reste directe : `snake_case` en base, `snake_case`
+pour les fichiers, `camelCase` pour les champs Dart.
 
 ### Montants financiers — règle critique
 
 FCFA = monnaie entière, sans centimes. Stocker et calculer en entiers.
 
-```typescript
+```dart
 // ✅ CORRECT
-amount: number         // ex: 50000 = 50 000 FCFA — jamais de float
-interestRate: number   // ex: 0.065 = 6,5% — float uniquement pour les taux
+final int amount;          // 50000 = 50 000 FCFA — le type interdit le float
+final double interestRate; // 0.065 = 6,5 % — double réservé aux taux
 
 // ✅ Affichage
-formatCurrency(50000) → "50 000 FCFA"
+Currency.format(50000); // "50 000 FCFA"
 
 // ❌ INTERDIT
-amount: 50000.50
+final double amount = 50000.50;
 ```
+
+Le typage `int` de Dart rend la règle structurelle : un montant décimal ne
+compile pas. C'est un gain net par rapport au `number` de TypeScript.
 
 ### Structure du projet
 
+Organisation par fonctionnalité : chaque domaine métier regroupe son interface,
+ses providers et sa logique.
+
 ```
-/app                    ← Routes Expo Router (screens)
-  /(auth)               ← Groupe routes non-authentifiées
-  /(tabs)               ← Groupe routes authentifiées (tabs)
-  /admin                ← Routes admin
-/components
-  /ui                   ← Atomes (Button, Input, Card...)
-  /features             ← Composants feature (BudgetCard, DebtItem...)
-/hooks                  ← Custom hooks (useSimulation, useBudget...)
-/services               ← Accès Supabase isolé
-  supabase.ts           ← Client Supabase + types générés
-  transactions.ts
-  debts.ts
-  simulation.ts         ← Moteur de simulation (calculs purs)
-/stores                 ← Zustand stores (état global)
-/types                  ← Types TypeScript partagés
-/constants              ← UEMOA_RATES, config
-/utils                  ← Fonctions pures utilitaires (formatCurrency...)
-/__tests__              ← Tests co-localisés avec la source
+lib/
+├── main.dart                  ← Point d'entrée, initialisations
+├── app.dart                   ← MaterialApp.router
+├── core/                      ← Transverse, sans dépendance aux features
+│   ├── theme/                 ← Tokens du Design System
+│   ├── router/                ← Routes go_router
+│   ├── config/                ← Variables d'environnement
+│   ├── constants/             ← Taux UEMOA, catégories
+│   └── utils/                 ← Currency, Dates
+├── data/
+│   ├── models/                ← Modèles métier
+│   ├── services/              ← Accès Supabase isolé
+│   └── local/                 ← Base drift, file de mutations
+├── features/                  ← Un dossier par domaine
+│   └── <domaine>/
+│       ├── presentation/      ← Écrans et widgets propres au domaine
+│       ├── providers/         ← Riverpod
+│       └── domain/            ← Logique métier pure
+└── shared/
+    └── widgets/               ← Composants du Design System
 ```
 
-**Règle absolue :** les composants n'appellent jamais Supabase directement — toujours via `/services/` ou un custom hook.
+**Règle absolue :** un widget n'appelle jamais Supabase directement — il passe
+par un provider Riverpod, lui-même adossé à `data/services/`.
 
-### Format des réponses Supabase
+### Format des réponses de service
 
-```typescript
-// Wrapper de service — format uniforme pour tous les appels
-type ServiceResult<T> = { data: T | null; error: string | null }
+```dart
+/// Résultat uniforme — aucun service ne propage d'exception brute.
+sealed class Result<T> {
+  const Result();
+}
 
-async function getTransactions(userId: string): Promise<ServiceResult<Transaction[]>> {
-  const { data, error } = await supabase.from('transactions').select()
-  if (error) return { data: null, error: error.message }
-  return { data, error: null }
+final class Success<T> extends Result<T> {
+  const Success(this.data);
+  final T data;
+}
+
+final class Failure<T> extends Result<T> {
+  const Failure(this.message);
+  final String message;
 }
 ```
+
+Le `sealed class` de Dart force le traitement exhaustif des deux cas au
+`switch` : impossible d'ignorer une erreur par omission.
 
 ### Gestion des erreurs
 
-```typescript
-// 2 niveaux distincts : log technique (Sentry) + message utilisateur
+```dart
+// Deux niveaux distincts : trace technique et message utilisateur.
 try {
-  await saveTransaction(data)
-} catch (error) {
-  Sentry.captureException(error)   // Log complet — jamais exposé à l'utilisateur
-  showToast("Hmm, la sauvegarde a échoué. Réessaie dans un instant.")
+  await saveTransaction(data);
+} catch (error, stack) {
+  await Sentry.captureException(error, stackTrace: stack); // jamais exposé
+  AppToast.show(context, 'Hmm, la sauvegarde a échoué. Réessaie dans un instant.',
+      type: ToastType.error);
 }
-// ❌ INTERDIT : catch vide, erreur silencieuse, détails techniques exposés à l'utilisateur
-// ✅ Mode dégradé : feature désactivée + message clair + fallback toujours disponible
 ```
+
+Interdit : `catch` vide, erreur silencieuse, détail technique montré à
+l'utilisateur. Attendu : fonction dégradée, message clair, repli disponible.
 
 ### États de chargement
 
-```typescript
-// TanStack Query gère isLoading/isError/data — pas de state manuel
-const { data, isLoading, error } = useQuery({ queryKey: ['transactions'], queryFn: fetchTransactions })
-
-// États vides → <EmptyState /> avec action guidée (FR51)
-// Chargement → <LoadingSpinner /> ou skeleton — jamais de blank screen
-// Erreur réseau → <ErrorState message="..." onRetry={refetch} />
+```dart
+// AsyncValue porte les trois états — pas de booléen manuel.
+ref.watch(transactionsProvider).when(
+      data: (items) => TransactionList(items: items),
+      loading: () => const TransactionSkeleton(),
+      error: (e, _) => ErrorStateView(onRetry: () => ref.invalidate(transactionsProvider)),
+    );
 ```
 
-### Simulation engine — règles spéciales
+État vide → `EmptyState` avec action guidée (FR51). Chargement → squelette,
+jamais d'écran blanc. Erreur réseau → message et possibilité de relancer.
 
-```typescript
-// Fonctions pures, 100% locales, testables unitairement — aucun effet de bord
-function calculateCompoundInterest(
-  principal: number,            // FCFA entier
-  rate: number,                 // float 0-1
-  years: number,
-  monthlyContribution: number   // FCFA entier
-): SimulationResult { ... }
+### Moteur de simulation — règles spéciales
 
-// ❌ INTERDIT dans le moteur : appels Supabase, Zustand, navigation
-// ✅ Disclaimer affiché systématiquement sur tout résultat (obligation légale)
+```dart
+/// Fonctions pures, locales, testables — aucun effet de bord.
+SimulationResult calculateCompoundInterest({
+  required int principal,           // FCFA entier
+  required double annualRate,       // fraction 0-1
+  required int months,
+  required int monthlyContribution, // FCFA entier
+}) { ... }
 ```
 
-### Règles obligatoires — tous les agents Claude
+Interdit dans le moteur : appel Supabase, lecture de provider, navigation.
+Obligatoire : mention légale affichée sur tout résultat de simulation.
 
-- `snake_case` en DB, `camelCase` en TypeScript — sans exception
-- Montants FCFA en entiers — jamais de float
-- Jamais appeler Supabase depuis un composant — passer par `/services/`
-- Jamais de données financières dans les logs (Sentry breadcrumbs inclus)
-- Services retournent toujours `{ data, error }`
-- Disclaimer systématique sur toute simulation affichée
-- Pas de `any` TypeScript — utiliser `unknown` si type incertain
+### Règles obligatoires — toute session de développement
+
+- `snake_case` en base et pour les fichiers, `camelCase` en Dart
+- Montants FCFA typés `int` — jamais `double`
+- Aucun appel Supabase depuis un widget — passer par un provider
+- Aucune donnée financière dans les logs, y compris les breadcrumbs Sentry
+- Les services retournent un `Result<T>`
+- Mention légale systématique sur toute simulation affichée
+- Pas de `dynamic` — utiliser `Object?` si le type est incertain
 
 ---
 
@@ -245,177 +284,105 @@ function calculateCompoundInterest(
 ### Arborescence complète
 
 ```
-FinanceUEMOA/
-├── app.config.ts              ← Config Expo (env, plugins, EAS)
-├── package.json
-├── tsconfig.json              ← TypeScript strict
-├── tailwind.config.js
-├── babel.config.js
-├── eas.json                   ← Config EAS Build (dev/preview/prod)
-├── .env.local                 ← Variables locales (jamais commitées)
-├── .env.example               ← Template variables d'env
-├── .gitignore
+sira/
+├── pubspec.yaml
+├── analysis_options.yaml       ← Lints stricts
+├── env.example.json            ← Modèle de configuration
+├── .github/workflows/ci.yml    ← Analyse + tests + build
 │
-├── .github/
-│   └── workflows/
-│       └── ci.yml             ← Build + test auto sur push
+├── lib/
+│   ├── main.dart               ← Initialisations, ProviderScope
+│   ├── app.dart                ← MaterialApp.router
+│   │
+│   ├── core/
+│   │   ├── theme/              ← app_colors, app_typography, app_spacing,
+│   │   │                         app_motion, app_theme
+│   │   ├── router/app_router.dart
+│   │   ├── config/env.dart
+│   │   ├── constants/          ← uemoa_rates, expense_categories, plans
+│   │   └── utils/              ← currency, dates, validators
+│   │
+│   ├── data/
+│   │   ├── models/             ← user_profile, transaction, debt,
+│   │   │                         savings_goal, simulation, subscription
+│   │   ├── services/           ← Accès Supabase, un fichier par domaine
+│   │   │   ├── supabase_client.dart
+│   │   │   ├── auth_service.dart
+│   │   │   ├── transactions_service.dart
+│   │   │   ├── debts_service.dart
+│   │   │   ├── goals_service.dart
+│   │   │   ├── subscriptions_service.dart
+│   │   │   └── uemoa_rates_service.dart      ← FR50
+│   │   └── local/
+│   │       ├── app_database.dart             ← drift
+│   │       └── mutation_queue.dart           ← File hors ligne
+│   │
+│   ├── features/
+│   │   ├── auth/               ← FR01-07  (01.1, 01.2, connexion)
+│   │   ├── onboarding/         ← FR08-11  (01.3, 01.4, 01.5)
+│   │   ├── dashboard/          ← FR18     (01.6)
+│   │   ├── transactions/       ← FR12-17  (02.1, 02.2, 02.3)
+│   │   ├── simulation/         ← FR19-25  (03.1, 03.2)
+│   │   │   ├── domain/         ← Moteur pur, sans dépendance externe
+│   │   │   │   ├── compound_interest.dart
+│   │   │   │   ├── debt_avalanche.dart
+│   │   │   │   ├── debt_snowball.dart
+│   │   │   │   ├── goal_projection.dart
+│   │   │   │   └── inflation_adjuster.dart
+│   │   │   ├── presentation/
+│   │   │   └── providers/
+│   │   ├── debts/              ← FR26-31  (04.1, 04.2, 04.3)
+│   │   ├── goals/              ← FR32-36  (05.1, 05.2, 05.3)
+│   │   ├── assistant/          ← (06.1)
+│   │   ├── investments/        ← (07.1, 07.2)
+│   │   ├── entrepreneur/       ← (08.1)
+│   │   ├── profile/            ← FR06-07  (09.1, 09.2)
+│   │   ├── subscription/       ← FR37-42  (09.3)
+│   │   ├── notifications/      ← FR43-46
+│   │   └── admin/              ← FR47-49
+│   │
+│   └── shared/
+│       └── widgets/            ← Design System
+│           ├── primary_button.dart
+│           ├── secondary_button.dart
+│           ├── text_link.dart
+│           ├── app_input.dart
+│           ├── page_header.dart
+│           ├── selection_chips.dart
+│           ├── app_card.dart
+│           ├── empty_state.dart
+│           ├── app_toast.dart
+│           ├── pressable_scale.dart
+│           └── widgets.dart     ← Export groupé
 │
-├── app/                       ← Routes Expo Router (= screens)
-│   ├── _layout.tsx            ← Root layout (providers globaux)
-│   ├── index.tsx              ← Redirect → auth ou tabs
-│   ├── (auth)/                ← Routes non-authentifiées
-│   │   ├── _layout.tsx
-│   │   ├── welcome.tsx        ← 01.1 Splash/Welcome
-│   │   ├── login.tsx          ← FR01-02 Connexion
-│   │   ├── register.tsx       ← FR01 Inscription
-│   │   └── forgot-password.tsx ← FR03 Reset mot de passe
-│   ├── (onboarding)/          ← FR08-11 Onboarding progressif
-│   │   ├── _layout.tsx
-│   │   ├── profile.tsx        ← 01.3 Profil
-│   │   ├── situation.tsx      ← 01.4 Situation financière
-│   │   └── goal.tsx           ← 01.5 Premier objectif
-│   ├── (tabs)/                ← Routes authentifiées (tab bar)
-│   │   ├── _layout.tsx        ← Tab bar configuration
-│   │   ├── index.tsx          ← 01.6 Dashboard (FR18)
-│   │   ├── transactions.tsx   ← 02.2 Liste dépenses (FR14)
-│   │   ├── simulator.tsx      ← 03.1 Simulateur (FR19-25)
-│   │   ├── debts.tsx          ← 04.1 Liste dettes (FR28)
-│   │   └── goals.tsx          ← 05.1 Liste objectifs (FR32)
-│   ├── transaction/
-│   │   ├── new.tsx            ← 02.1 Saisie dépense (FR12)
-│   │   └── [id].tsx           ← FR13 Modifier/supprimer
-│   ├── budget.tsx             ← 02.3 Budget mensuel (FR15-17)
-│   ├── simulation/
-│   │   └── [id].tsx           ← 03.2 Résultat + scénario (FR23)
-│   ├── debt/
-│   │   ├── new.tsx            ← 04.2 Ajouter dette (FR26)
-│   │   └── [id]/
-│   │       ├── index.tsx      ← Détail dette (FR27-28)
-│   │       └── repayment.tsx  ← 04.3 Plan remboursement (FR29-30)
-│   ├── goal/
-│   │   ├── new.tsx            ← 05.2 Créer objectif (FR32)
-│   │   └── [id].tsx           ← 05.3 Détail objectif (FR33-36)
-│   ├── profile.tsx            ← 09.1 Profil (FR06-07)
-│   ├── settings.tsx           ← 09.2 Paramètres & intégrations
-│   ├── subscription.tsx       ← 09.3 Abonnement (FR37-42)
-│   └── admin/                 ← FR47-49 Admin (route protégée)
-│       ├── _layout.tsx
-│       └── index.tsx
+├── test/
+│   ├── unit/
+│   │   ├── simulation/          ← Tests critiques — cas réels UEMOA
+│   │   └── utils/
+│   └── widget/
 │
-├── components/
-│   ├── ui/                    ← Atomes réutilisables
-│   │   ├── Button.tsx
-│   │   ├── Input.tsx
-│   │   ├── Card.tsx
-│   │   ├── Badge.tsx
-│   │   ├── LoadingSpinner.tsx
-│   │   ├── EmptyState.tsx     ← FR51 États vides pédagogiques
-│   │   ├── ErrorState.tsx     ← FR56 Erreur dégradée
-│   │   ├── Toast.tsx
-│   │   ├── Modal.tsx
-│   │   ├── ProgressBar.tsx
-│   │   ├── CurrencyInput.tsx  ← Input FCFA (entiers, formatage)
-│   │   └── RateInput.tsx      ← Input taux en %
-│   └── features/
-│       ├── auth/
-│       │   └── BiometricButton.tsx    ← FR04
-│       ├── dashboard/
-│       │   ├── HealthScoreCard.tsx    ← FR18
-│       │   └── QuickStatsRow.tsx
-│       ├── transactions/
-│       │   ├── TransactionItem.tsx
-│       │   ├── CategoryPicker.tsx
-│       │   └── BudgetProgressBar.tsx  ← FR16-17
-│       ├── simulation/
-│       │   ├── SimulationForm.tsx
-│       │   ├── ProjectionChart.tsx
-│       │   ├── ScenarioComparison.tsx ← FR23 Premium
-│       │   └── SimulationDisclaimer.tsx ← OBLIGATOIRE légalement
-│       ├── debts/
-│       │   ├── DebtItem.tsx
-│       │   ├── DebtPlanCard.tsx
-│       │   └── LiberationDateBadge.tsx ← FR30
-│       ├── goals/
-│       │   ├── GoalCard.tsx
-│       │   └── GoalProgress.tsx       ← FR34-35
-│       └── subscription/
-│           ├── PlanCard.tsx           ← FR37
-│           └── PaymentButton.tsx      ← FR38 Wave/MoMo
+├── assets/images/
 │
-├── hooks/                     ← Logique métier — jamais dans les composants
-│   ├── useAuth.ts             ← FR01-07 Session + biométrie
-│   ├── useSimulation.ts       ← FR19-25 Calculs locaux
-│   ├── useDebtPlan.ts         ← FR29-30 Avalanche/boule de neige
-│   ├── useBudget.ts           ← FR15-17 Budget + alertes
-│   ├── useGoalProjection.ts   ← FR34-35 Projection objectif
-│   ├── useSubscription.ts     ← FR37-42 État abonnement + feature flags
-│   ├── useOfflineSync.ts      ← Offline mutations queue
-│   └── useNotifications.ts    ← FR43-46 Push
-│
-├── services/                  ← Accès Supabase isolé (jamais appelé depuis les composants)
-│   ├── supabase.ts            ← Client singleton + types générés
-│   ├── auth.ts                ← FR01-07
-│   ├── transactions.ts        ← FR12-18
-│   ├── budgets.ts             ← FR15-17
-│   ├── debts.ts               ← FR26-31
-│   ├── goals.ts               ← FR32-36
-│   ├── subscriptions.ts       ← FR37-42
-│   ├── notifications.ts       ← FR43-46
-│   ├── uemoa-rates.ts         ← FR50 Taux configurables
-│   ├── admin.ts               ← FR47-49
-│   └── simulation-engine/     ← Moteur pur — zéro dépendances externes
-│       ├── compound-interest.ts
-│       ├── debt-avalanche.ts
-│       ├── debt-snowball.ts
-│       ├── goal-projection.ts
-│       └── inflation-adjuster.ts
-│
-├── stores/                    ← Zustand (état global uniquement)
-│   ├── auth.store.ts          ← Session, profil user
-│   ├── subscription.store.ts  ← Plan actuel, feature flags Premium
-│   └── ui.store.ts            ← Préférences UI
-│
-├── types/
-│   ├── supabase.ts            ← Types auto-générés (supabase gen types)
-│   ├── models.ts              ← Transaction, Debt, Goal, Simulation...
-│   ├── navigation.ts          ← Types routes Expo Router
-│   └── api.ts                 ← ServiceResult<T>, etc.
-│
-├── constants/
-│   ├── uemoa-rates.ts         ← Taux BRVM/épargne/inflation défaut (FR50)
-│   ├── categories.ts          ← Catégories dépenses UEMOA
-│   ├── plans.ts               ← Features Gratuit vs Premium
-│   └── config.ts              ← Timeouts, limites, seuils
-│
-├── utils/
-│   ├── currency.ts            ← formatCurrency(50000) → "50 000 FCFA"
-│   ├── dates.ts               ← Formatage dates fr-FR/fr-CI
-│   └── validation.ts          ← Helpers Zod communs
-│
-├── supabase/                  ← Infrastructure Supabase
-│   ├── config.toml
-│   ├── migrations/            ← Migrations DB versionées
-│   ├── seeds/                 ← Données de test locales
-│   └── functions/             ← Edge Functions (Deno/TypeScript)
-│       ├── wave-webhook/      ← Webhook paiement Wave (FR38-39)
-│       ├── momo-webhook/      ← Webhook Orange Money/MoMo
-│       └── brvm-sync/         ← Cron quotidien données BRVM
-│
-└── __tests__/
-    ├── unit/
-    │   ├── simulation-engine/ ← Tests critiques — cas réels UEMOA
-    │   └── utils/
-    └── integration/
-        └── services/
+└── supabase/                    ← Inchangé — indépendant du framework
+    ├── migrations/
+    ├── seeds/
+    └── functions/
+        ├── wave-webhook/
+        ├── momo-webhook/
+        └── brvm-sync/
 ```
+
+Les dossiers `android/`, `ios/` et `web/` sont générés par `flutter create .`
+et ne sont pas versionnés tant qu'aucune configuration native ne le justifie.
+
 
 ### Frontières architecturales
 
 **Frontière Auth :**
-Supabase Auth → `useAuth` hook → middleware Expo Router → routes `(tabs)/` et `(onboarding)/` protégées automatiquement.
+Supabase Auth → `authProvider` (Riverpod) → `redirect` de go_router → les routes authentifiées et d'onboarding sont protégées automatiquement.
 
 **Frontière Paiement :**
-Wave/MoMo → Edge Function (vérification signature + idempotence) → table `subscriptions` → `useSubscription` hook → feature flags Zustand → gating dans les composants.
+Wave/MoMo → Edge Function (vérification signature + idempotence) → table `subscriptions` → `subscriptionProvider` → drapeaux de fonctionnalité → conditionnement dans les widgets.
 
 **Frontière Simulation :**
 `/services/simulation-engine/` = îlot isolé. Fonctions pures sans effets de bord. Aucun appel réseau, aucun store. Appelé uniquement via `useSimulation.ts`.
@@ -424,7 +391,7 @@ Wave/MoMo → Edge Function (vérification signature + idempotence) → table `s
 API BRVM externe → Edge Function cron quotidien → table `uemoa_rates` → `uemoa-rates.ts` service → hooks simulation.
 
 **Frontière Offline :**
-TanStack Query mutations → file locale MMKV (chiffré) → sync automatique à la reconnexion → Supabase.
+Mutations → file locale drift → synchronisation automatique à la reconnexion → Supabase.
 
 ### Flux de données principal
 
@@ -437,8 +404,8 @@ User action
   → PostgreSQL (RLS actif — user_id vérifié automatiquement)
 
 Mode offline :
-  → TanStack Query mutation en attente
-  → MMKV (chiffré)
+  → Mutation mise en file
+  → drift (SQLite local)
   → Sync auto à la reconnexion
 ```
 
@@ -448,38 +415,37 @@ Mode offline :
 
 ### Cohérence des décisions ✅
 
-Toutes les technologies sont compatibles entre elles. Expo SDK 55 + Expo Router v4 + Supabase JS v2.99.1 + NativeWind 4 + Sentry v8.7.0 forment une stack cohérente sans conflits de versions. La séparation Zustand (état app) / TanStack Query (état serveur) est propre et sans chevauchement. Le simulation engine pur s'intègre naturellement dans l'architecture offline-first.
+Les technologies retenues sont compatibles entre elles : Flutter, go_router, Riverpod, supabase_flutter, drift et sentry_flutter forment une stack cohérente. Riverpod couvre à la fois l'état applicatif et l'état serveur, ce qui supprime la frontière Zustand / TanStack Query de la stack précédente. Le moteur de simulation, écrit en Dart pur, s'intègre naturellement à l'approche hors ligne.
 
 ### Couverture des exigences ✅
 
 **57/57 FRs couverts.** Tous les NFRs critiques adressés architecturalement :
 - Simulation ≤500ms → calcul 100% local (`simulation-engine/`)
-- Offline read+write → MMKV + TanStack Query mutations queue
-- Sécurité AES-256 → MMKV chiffré + Supabase encryption + RLS
+- Lecture et saisie hors ligne → drift + file de mutations
+- Sécurité → `flutter_secure_storage` (Keystore / Keychain) + chiffrement Supabase + RLS
 - Webhooks idempotents → Edge Function avec vérification `webhook_id`
 - Multi-user préparé → RLS par `auth.uid()` dès le MVP
 
 ### Gaps identifiés et résolus
 
-**Gap 1 — Supabase Auth storage adapter (mineur) :**
-Supabase Auth avec React Native nécessite MMKV comme storage pour les sessions JWT.
-```typescript
-// services/supabase.ts
-const supabase = createClient(url, key, {
-  auth: { storage: new MMKVStorage(), autoRefreshToken: true, persistSession: true }
-})
-```
+**Gap 1 — Stockage des sessions (mineur) :**
+`supabase_flutter` persiste la session via `SharedPreferences` par défaut, ce qui
+ne convient pas à un jeton d'authentification. Fournir un `LocalStorage`
+personnalisé adossé à `flutter_secure_storage` (Keystore / Keychain).
 
-**Gap 2 — Script génération types (mineur) :**
-À ajouter dans `package.json` pour régénérer les types après chaque migration :
-```json
-"scripts": {
-  "types:supabase": "supabase gen types typescript --local > types/supabase.ts"
-}
-```
+**Gap 2 — Pas de génération de types automatique (mineur) :**
+Le SDK Dart ne dispose pas d'équivalent à `supabase gen types typescript`. Les
+modèles de `data/models/` sont écrits à la main et doivent être revus à chaque
+migration. Une vérification est ajoutée à la checklist de migration.
 
-**Gap 3 — FR24 simulation sans inscription (mineur) :**
-Route `/app/simulator-preview.tsx` hors groupe `(tabs)/` — état local uniquement, pas de sauvegarde. Redirige vers inscription après la simulation.
+**Gap 3 — FR24, simulation sans inscription (mineur) :**
+Route `/simulateur-decouverte` hors des routes authentifiées — état local
+uniquement, aucune sauvegarde. Redirige vers l'inscription à l'issue du calcul.
+
+**Gap 4 — Notifications push (nouveau) :**
+Sans Expo, il faut passer par Firebase Cloud Messaging et APNs, ce qui implique
+un projet Firebase et la configuration native associée. Cette mise en place est
+à intégrer à l'Epic 6.
 
 ### Checklist de complétude
 
@@ -508,14 +474,13 @@ npx create-expo-app@latest FinanceUEMOA
 **Décisions critiques (bloquent l'implémentation) :**
 - Backend & base de données → Supabase (PostgreSQL)
 - Authentification → Supabase Auth
-- State management → Zustand + TanStack Query
-- Build & distribution → EAS Build + EAS Submit
+- Gestion d'état → Riverpod
+- Build & distribution → GitHub Actions + Fastlane
 
 **Décisions importantes (structurent l'architecture) :**
 - API → Supabase JS SDK + Edge Functions
 - Monitoring → Sentry
-- OTA → Expo Updates
-- CI/CD → GitHub Actions + EAS
+- CI/CD → GitHub Actions (analyse, tests, build signé)
 
 **Décisions différées (post-MVP) :**
 - Import automatique Wave/MoMo (Phase 2)
@@ -534,7 +499,7 @@ Avantage pour ce projet : les données financières sont intrinsèquement relati
 
 **Stockage local (offline) :**
 - `react-native-mmkv` — données financières sensibles (chiffrées AES)
-- TanStack Query cache — données serveur en mémoire + file de mutations
+- Cache Riverpod — données serveur en mémoire, adossées à drift
 
 **Schéma principal (tables Supabase) :**
 - `profiles` — données utilisateur, situation financière
@@ -559,7 +524,7 @@ Avantage pour ce projet : les données financières sont intrinsèquement relati
 - Biométrie locale : `expo-local-authentication` — traitement 100% local OS, jamais transmis
 
 **Sécurité données :**
-- At-rest : AES-256 via MMKV (local) + chiffrement Supabase (serveur)
+- At-rest : Keystore / Keychain pour les jetons, chiffrement Supabase côté serveur
 - In-transit : TLS 1.3 (Supabase par défaut)
 - RLS : politique par table, `auth.uid()` obligatoire
 - Logs : zéro donnée financière — `console.log` bannis sur les objets sensibles
@@ -568,7 +533,7 @@ Avantage pour ce projet : les données financières sont intrinsèquement relati
 
 ### API & Communication
 
-**Lecture/écriture :** Supabase JS SDK directement depuis React Native — pas d'API REST custom à maintenir.
+**Lecture/écriture :** SDK `supabase_flutter` appelé depuis la couche `data/services/` — pas d'API REST maison à maintenir.
 
 **Webhooks Wave/MoMo :** Supabase Edge Functions (Deno/TypeScript)
 - Réception + vérification signature
@@ -577,10 +542,10 @@ Avantage pour ce projet : les données financières sont intrinsèquement relati
 
 **Données BRVM :** Edge Function cron (quotidien) → stockage en DB → servi depuis cache.
 
-**Notifications push :** Expo Push Notifications Service → `expo-notifications` côté client.
+**Notifications push :** Firebase Cloud Messaging (Android) et APNs (iOS) via `firebase_messaging`, déclenchées depuis les Edge Functions.
 
 **Gestion des erreurs :**
-- Toute intégration externe (Wave, MoMo, BRVM) derrière une interface TypeScript
+- Toute intégration externe (Wave, MoMo, BRVM) derrière une interface Dart
 - Dégradation gracieuse : si API indisponible → feature non bloquante + message clair
 - Timeout Wave/MoMo : 30s max, état "en attente" avec retry
 
@@ -590,31 +555,30 @@ Avantage pour ce projet : les données financières sont intrinsèquement relati
 
 | Aspect | Décision | Détail |
 |--------|----------|--------|
-| Navigation | Expo Router v4 | `/app/` = routes, file-based |
-| State global | Zustand | Session user, abonnement, préférences UI |
-| State serveur | TanStack Query | Cache, offline mutations, sync auto |
-| Style | NativeWind + Tailwind | Classes Tailwind sur composants RN |
-| Formulaires | React Hook Form + Zod | Validation schéma-first |
-| Stockage local | MMKV (sensible) + AsyncStorage (préférences) | |
-| Simulation engine | Calculs purs TypeScript | 100% local, offline, testable unitairement |
+| Navigation | `go_router` | Routes déclarées dans `core/router/` |
+| État | `flutter_riverpod` | Session, abonnement, données serveur, préférences |
+| Style | `ThemeData` + tokens Dart | `core/theme/` — miroir du Design System |
+| Formulaires | `Form` + validateurs | Intégrés au framework, pas de dépendance |
+| Stockage local | `flutter_secure_storage` (jetons) + `drift` (données) | |
+| Moteur de simulation | Dart pur | Local, hors ligne, testable unitairement |
 
 **Séparation des responsabilités :**
-- Logique métier → custom hooks (`useSimulation`, `useDebtPlan`, `useBudget`)
-- Composants UI → présentation pure, sans logique métier
-- Services → couche d'accès Supabase isolée (`/services/`)
+- Logique métier → providers Riverpod et `features/<domaine>/domain/`
+- Widgets → présentation seule, aucune logique métier
+- Services → accès Supabase isolé dans `data/services/`
 
 ---
 
 ### Infrastructure & Déploiement
 
-| Aspect | Solution | Version |
-|--------|----------|---------|
-| Build mobile | EAS Build | Cloud — Android + iOS sans Mac local |
-| Distribution | EAS Submit | Google Play + App Store automatisé |
-| OTA updates | Expo Updates | Correctifs JS sans validation store |
-| Monitoring | `@sentry/react-native` | v8.7.0 — crash + performance + traces |
-| Variables d'env | `app.config.ts` + EAS Secrets | Jamais de secrets dans le code |
-| CI/CD | GitHub Actions + EAS | Build + submit automatique sur tag |
+| Aspect | Solution | Détail |
+|--------|----------|--------|
+| Build Android | GitHub Actions | `flutter build appbundle`, signature via secrets |
+| Build iOS | Runner macOS GitHub Actions | Nécessaire faute de Mac local |
+| Distribution | Fastlane | Google Play et App Store |
+| Correctifs | Publication store | Pas d'équivalent OTA — à intégrer au rythme de release |
+| Monitoring | `sentry_flutter` | Crash, performance, traces |
+| Variables d'env | `--dart-define-from-file` + secrets CI | Jamais de secret dans le dépôt |
 
 **Environnements :**
 - `development` — Supabase local (CLI)
@@ -624,16 +588,16 @@ Avantage pour ce projet : les données financières sont intrinsèquement relati
 ### Analyse d'impact des décisions
 
 **Séquence d'implémentation imposée par ces décisions :**
-1. Init projet Expo + configuration Supabase local
+1. Init projet Flutter + configuration Supabase
 2. Schéma DB + migrations + RLS policies
 3. Supabase Auth + session management
 4. Simulation engine (calculs locaux, testés unitairement)
 5. Features métier (dépenses → dettes → objectifs)
 6. Edge Functions (webhooks paiement)
 7. Notifications push
-8. EAS Build + Sentry + CI/CD
+8. Build signé + Sentry + CI/CD
 
 **Dépendances croisées :**
 - Toutes les features métier dépendent du schéma DB (décision 1)
 - Le gating Premium dépend des webhooks (Edge Functions)
-- L'offline-first dépend de TanStack Query configuré avant les features
+- Le hors-ligne dépend de drift et de la file de mutations, à poser avant les features

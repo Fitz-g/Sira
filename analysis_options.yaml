@@ -1,0 +1,24 @@
+include: package:flutter_lints/flutter.yaml
+
+analyzer:
+  errors:
+    # Un montant mal typé ou une valeur nulle non gérée doit bloquer, pas avertir.
+    invalid_assignment: error
+    argument_type_not_assignable: error
+  exclude:
+    - '**/*.g.dart'
+    - '**/*.freezed.dart'
+    - '_bmad/**'
+    - '.bmad-outpout/**'
+
+linter:
+  rules:
+    - always_declare_return_types
+    - avoid_print # utiliser debugPrint, et jamais sur une donnée financière
+    - prefer_const_constructors
+    - prefer_const_declarations
+    - prefer_final_locals
+    - require_trailing_commas
+    - sort_child_properties_last
+    - unawaited_futures
+    - use_super_parameters

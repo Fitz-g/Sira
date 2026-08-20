@@ -87,37 +87,35 @@ Les couleurs sémantiques (`primary`, `success`, `warning`, `error`) restent ide
 
 ---
 
-## Implémentation React Native
+## Implémentation Flutter
 
-```typescript
-export const colorRoles = {
-  primary:              '--to-define--',
-  'primary-light':      '--to-define--',
-  'on-primary':         '#FFFFFF',
+`lib/core/theme/app_colors.dart` — valeurs arrêtées le 2026-05-03.
 
-  surface:              '#FFFFFF',
-  'surface-card':       '#FFFFFF',
-  'on-surface':         '--neutral-900--',
-  'on-surface-secondary': '--neutral-700--',
+```dart
+abstract final class AppColors {
+  static const primary      = Color(0xFF166534); // vert profond, 7.4:1 sur blanc
+  static const primaryLight = Color(0xFFF0FDF4);
+  static const primaryDark  = Color(0xFF14532D);
+  static const onPrimary    = Color(0xFFFFFFFF);
 
-  border:               '--neutral-300--',
-  'border-focus':       '--primary--',
+  static const success = Color(0xFF16A34A);
+  static const warning = Color(0xFFD97706);
+  static const error   = Color(0xFFDC2626);
 
-  success:              '--to-define--',
-  warning:              '--to-define--',
-  error:                '--to-define--',
-} as const;
+  static const surface     = Color(0xFFFFFFFF);
+  static const surfaceCard = Color(0xFFFFFFFF);
 
-export const neutralScale = {
-  'neutral-100': '--to-define--',
-  'neutral-300': '--to-define--',
-  'neutral-500': '--to-define--',
-  'neutral-700': '--to-define--',
-  'neutral-900': '--to-define--',
-} as const;
+  static const neutral100 = Color(0xFFF5F5F5);
+  static const neutral300 = Color(0xFFD4D4D4);
+  static const neutral500 = Color(0xFF737373);
+  static const neutral700 = Color(0xFF404040);
+  static const neutral900 = Color(0xFF171717);
+}
 ```
 
-> Les valeurs hex seront définies en Phase Visual [W] — moodboard et palette.
+Deux fonctions dérivent la couleur d'un statut : `AppColors.scoreColor(int)`
+pour le score de santé financière, `AppColors.budgetColor(double)` pour le taux
+de consommation d'une enveloppe budgétaire.
 
 ---
 
