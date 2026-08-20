@@ -18,6 +18,12 @@ abstract final class Currency {
   static String formatAmount(int amount) =>
       _formatter.format(amount).replaceAll(' ', ' ');
 
+  /// Format abrégé pour les axes de graphique, où la place manque.
+  ///
+  /// `compact(2000000)` → `2 M` · `compact(500000)` → `500 k`
+  static String compact(int amount) =>
+      NumberFormat.compact(locale: 'fr_FR').format(amount);
+
   /// Convertit une saisie libre en entier FCFA.
   ///
   /// Retire espaces, séparateurs et suffixes.

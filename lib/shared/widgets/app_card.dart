@@ -167,10 +167,16 @@ class RecapRow extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            label,
-            style:
-                AppTypography.headingXxs.copyWith(color: AppColors.neutral500),
+          // Le libellé cède la place en premier : c'est la valeur qui compte.
+          Flexible(
+            child: Padding(
+              padding: const EdgeInsets.only(right: AppSpacing.sm),
+              child: Text(
+                label,
+                style: AppTypography.headingXxs
+                    .copyWith(color: AppColors.neutral500),
+              ),
+            ),
           ),
           Text(
             value,
