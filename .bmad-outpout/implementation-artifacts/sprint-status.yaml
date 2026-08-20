@@ -64,8 +64,8 @@ development_status:
   epic-1-retrospective: optional
 
   # Epic 2 — Suivi des Dépenses, Budget & Santé Financière
-  epic-2: backlog
-  2-1-saisie-d-une-depense: backlog
+  epic-2: in-progress
+  2-1-saisie-d-une-depense: review
   2-2-liste-des-depenses-filtrable: backlog
   2-3-modification-et-suppression-d-une-depense: backlog
   2-4-definition-d-un-budget-mensuel-par-categorie: backlog

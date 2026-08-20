@@ -11,6 +11,7 @@ import '../../../core/utils/dates.dart';
 import '../../../shared/widgets/widgets.dart';
 import '../../onboarding/domain/onboarding_options.dart';
 import '../../onboarding/providers/onboarding_provider.dart';
+import '../../transactions/providers/transactions_provider.dart';
 import 'widgets/goal_advice.dart';
 import 'widgets/score_placeholder.dart';
 import '../../../core/theme/app_icons.dart';
@@ -76,9 +77,19 @@ class DashboardScreen extends ConsumerWidget {
                       ),
                     ),
                     const SizedBox(height: AppSpacing.sm),
-                    _NoExpensesYet(
-                      onAddExpense: () => _openExpenses(context),
-                    ),
+                    ref.watch(currentMonthTotalProvider).when(
+                          // Tant que la lecture n'a pas abouti, une carte vide
+                          // tient la place : jamais de saut de mise en page.
+                          loading: () => const _MonthTotalLoading(),
+                          error: (_, __) => _NoExpensesYet(
+                            onAddExpense: () => _openExpenses(context),
+                          ),
+                          data: (total) => total > 0
+                              ? _MonthTotal(total: total)
+                              : _NoExpensesYet(
+                                  onAddExpense: () => _openExpenses(context),
+                                ),
+                        ),
                     const SizedBox(height: AppSpacing.lg),
 
                     // S4 — Actions rapides
@@ -121,13 +132,11 @@ class DashboardScreen extends ConsumerWidget {
     );
   }
 
-  // Les écrans des epics 2 et 5 n'existent pas encore. Plutôt qu'un bouton
-  // mort, on annonce ce qui vient — l'utilisateur sait où il en est.
-  void _openExpenses(BuildContext context) => AppToast.show(
-        context,
-        'Le suivi des dépenses arrive au prochain lot.',
-        type: ToastType.info,
-      );
+  void _openExpenses(BuildContext context) =>
+      context.push(Routes.expenseNew);
+
+  // L'écran des objectifs n'existe pas encore. Plutôt qu'un bouton mort, on
+  // annonce ce qui vient — l'utilisateur sait où il en est.
 
   void _openGoals(BuildContext context) => AppToast.show(
         context,
@@ -305,6 +314,59 @@ class _QuickAction extends StatelessWidget {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Total dépensé ce mois-ci.
+class _MonthTotal extends StatelessWidget {
+  const _MonthTotal({required this.total});
+
+  final int total;
+
+  @override
+  Widget build(BuildContext context) {
+    return AppCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Dépensé ce mois',
+            style: AppTypography.headingXxs.copyWith(
+              color: AppColors.neutral500,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            Currency.format(total),
+            style: AppTypography.tabular(AppTypography.headingLg),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Occupe la place du total pendant la lecture de la base.
+class _MonthTotalLoading extends StatelessWidget {
+  const _MonthTotalLoading();
+
+  @override
+  Widget build(BuildContext context) {
+    return const AppCard(
+      child: SizedBox(
+        height: 52,
+        child: Center(
+          child: SizedBox(
+            width: 18,
+            height: 18,
+            child: CircularProgressIndicator(
+              strokeWidth: 2,
+              valueColor: AlwaysStoppedAnimation(AppColors.neutral300),
+            ),
+          ),
         ),
       ),
     );

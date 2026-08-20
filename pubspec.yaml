@@ -12,7 +12,6 @@ dependencies:
 
   # État & injection de dépendances
   flutter_riverpod: ^2.6.1
-  riverpod_annotation: ^2.6.1
 
   # Navigation
   go_router: ^14.6.2
@@ -22,8 +21,8 @@ dependencies:
 
   # Stockage local
   flutter_secure_storage: ^9.2.2   # Sessions JWT (Keychain / Keystore)
-  drift: ^2.22.1                   # Base SQLite locale — offline-first
-  sqlite3_flutter_libs: ^0.5.26
+  drift: ^2.34.3                   # Base SQLite locale — offline-first
+  sqlite3_flutter_libs: ^0.5.42
   path_provider: ^2.1.5
   path: ^1.9.0
 
@@ -44,10 +43,11 @@ dev_dependencies:
     sdk: flutter
   flutter_lints: ^5.0.0
 
-  # Génération de code
-  build_runner: ^2.4.13
-  riverpod_generator: ^2.6.3
-  drift_dev: ^2.22.1
+  # Génération de code — drift uniquement.
+  # riverpod_generator a été retiré : les providers sont écrits à la main, et
+  # l'analyzer qu'il embarquait ne supportait pas la version du SDK Dart.
+  build_runner: ^2.16.0
+  drift_dev: ^2.34.5
 
 flutter:
   uses-material-design: true

@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:drift/native.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:sira/core/theme/app_theme.dart';
 import 'package:sira/core/utils/currency.dart';
 import 'package:sira/features/dashboard/presentation/dashboard_screen.dart';
+import 'package:sira/data/local/app_database.dart';
 import 'package:sira/features/onboarding/providers/onboarding_provider.dart';
+import 'package:sira/features/transactions/providers/transactions_provider.dart';
 
 /// Monte le tableau de bord sur un conteneur dont l'état est déjà posé.
 ///
@@ -15,7 +18,14 @@ Future<void> _pumpDashboard(
   WidgetTester tester, {
   void Function(OnboardingNotifier)? given,
 }) async {
-  final container = ProviderContainer();
+  // Le tableau de bord lit les dépenses du mois : sans base, son résumé
+  // resterait indéfiniment en chargement.
+  final db = AppDatabase.forTesting(NativeDatabase.memory());
+  addTearDown(db.close);
+
+  final container = ProviderContainer(
+    overrides: [appDatabaseProvider.overrideWithValue(db)],
+  );
   addTearDown(container.dispose);
   given?.call(container.read(onboardingProvider.notifier));
 
@@ -25,6 +35,8 @@ Future<void> _pumpDashboard(
       child: MaterialApp(theme: AppTheme.light, home: const DashboardScreen()),
     ),
   );
+  // Laisse la lecture de la base aboutir.
+  await tester.pumpAndSettle();
 }
 
 void main() {
