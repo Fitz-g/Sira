@@ -4,6 +4,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../shared/widgets/widgets.dart';
+import '../../../../core/theme/app_icons.dart';
 
 /// Emplacement réservé du score de santé financière.
 ///
@@ -32,7 +33,7 @@ class ScorePlaceholder extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               const Icon(
-                Icons.pending_outlined,
+                AppIcons.gauge,
                 size: 28,
                 color: AppColors.neutral300,
               ),

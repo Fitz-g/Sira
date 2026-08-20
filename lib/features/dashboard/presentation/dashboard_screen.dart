@@ -13,6 +13,7 @@ import '../../onboarding/domain/onboarding_options.dart';
 import '../../onboarding/providers/onboarding_provider.dart';
 import 'widgets/goal_advice.dart';
 import 'widgets/score_placeholder.dart';
+import '../../../core/theme/app_icons.dart';
 
 /// 01.6 — Tableau de bord.
 ///
@@ -36,7 +37,7 @@ class DashboardScreen extends ConsumerWidget {
           children: [
             // S1 — Salutation
             const PageHeader(
-              title: 'Bonjour 👋',
+              title: 'Bonjour',
               variant: PageHeaderVariant.primary,
             ),
             Expanded(
@@ -94,7 +95,11 @@ class DashboardScreen extends ConsumerWidget {
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text('💡', style: TextStyle(fontSize: 18)),
+                          const Icon(
+                            AppIcons.lightbulb,
+                            size: 20,
+                            color: AppColors.primary,
+                          ),
                           const SizedBox(width: AppSpacing.sm),
                           Expanded(
                             child: Text(
@@ -205,7 +210,7 @@ class _NoExpensesYet extends StatelessWidget {
           const SizedBox(height: AppSpacing.md),
           SecondaryButton(
             label: 'Noter une dépense',
-            icon: Icons.add,
+            icon: AppIcons.plus,
             onPressed: onAddExpense,
           ),
         ],
@@ -235,7 +240,7 @@ class _QuickActions extends StatelessWidget {
       children: [
         Expanded(
           child: _QuickAction(
-            icon: Icons.add,
+            icon: AppIcons.plus,
             label: 'Dépense',
             onPressed: onExpense,
           ),
@@ -243,7 +248,7 @@ class _QuickActions extends StatelessWidget {
         const SizedBox(width: AppSpacing.sm),
         Expanded(
           child: _QuickAction(
-            icon: Icons.flag_outlined,
+            icon: AppIcons.target,
             label: 'Objectif',
             onPressed: onGoal,
           ),
@@ -251,7 +256,7 @@ class _QuickActions extends StatelessWidget {
         const SizedBox(width: AppSpacing.sm),
         Expanded(
           child: _QuickAction(
-            icon: Icons.trending_up,
+            icon: AppIcons.trendingUp,
             label: 'Simuler',
             onPressed: onSimulate,
           ),

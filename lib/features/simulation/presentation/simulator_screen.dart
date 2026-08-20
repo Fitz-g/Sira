@@ -10,14 +10,15 @@ import '../../../core/utils/currency.dart';
 import '../../../shared/widgets/widgets.dart';
 import '../domain/simulation_engine.dart';
 import '../domain/simulation_models.dart';
+import '../../../core/theme/app_icons.dart';
 
 /// Types d'objectif proposés — spécification 03.1, `OBJ-10-3`.
 const _goalTypes = <ChipOption>[
-  ChipOption(id: 'travel', label: 'Voyager', icon: '✈️'),
-  ChipOption(id: 'buy', label: 'Acheter', icon: '🛒'),
-  ChipOption(id: 'save', label: 'Épargner', icon: '💰'),
-  ChipOption(id: 'invest', label: 'Investir', icon: '📈'),
-  ChipOption(id: 'other', label: 'Autre', icon: '🎯'),
+  ChipOption(id: 'travel', label: 'Voyager', icon: AppIcons.plane),
+  ChipOption(id: 'buy', label: 'Acheter', icon: AppIcons.shoppingCart),
+  ChipOption(id: 'save', label: 'Épargner', icon: AppIcons.piggyBank),
+  ChipOption(id: 'invest', label: 'Investir', icon: AppIcons.trendingUp),
+  ChipOption(id: 'other', label: 'Autre', icon: AppIcons.target),
 ];
 
 /// Taux retenu par défaut pour l'aperçu.

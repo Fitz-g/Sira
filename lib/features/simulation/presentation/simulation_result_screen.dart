@@ -46,8 +46,10 @@ class SimulationResultScreen extends StatelessWidget {
                     // S2 — Le chiffre qui répond à la question posée.
                     Text(
                       Currency.format(result.monthlyContribution),
-                      style: AppTypography.heading3xl.copyWith(
-                        color: AppColors.primary,
+                      style: AppTypography.tabular(
+                        AppTypography.heading3xl.copyWith(
+                          color: AppColors.primary,
+                        ),
                       ),
                       textAlign: TextAlign.center,
                     ),

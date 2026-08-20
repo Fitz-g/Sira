@@ -124,8 +124,10 @@ class MetricRow extends StatelessWidget {
                 const SizedBox(height: 4),
                 Text(
                   metrics[i].value,
-                  style: AppTypography.headingSm.copyWith(
-                    color: metrics[i].valueColor ?? AppColors.onSurface,
+                  style: AppTypography.tabular(
+                    AppTypography.headingSm.copyWith(
+                      color: metrics[i].valueColor ?? AppColors.onSurface,
+                    ),
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -180,9 +182,11 @@ class RecapRow extends StatelessWidget {
           ),
           Text(
             value,
-            style: AppTypography.headingXs.copyWith(
-              fontWeight: FontWeight.w600,
-              color: AppColors.onSurface,
+            style: AppTypography.tabular(
+              AppTypography.headingXs.copyWith(
+                fontWeight: FontWeight.w600,
+                color: AppColors.onSurface,
+              ),
             ),
           ),
         ],

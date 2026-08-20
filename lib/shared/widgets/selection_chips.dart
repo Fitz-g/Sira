@@ -10,8 +10,8 @@ class ChipOption {
   final String id;
   final String label;
 
-  /// Emoji ou pictogramme affiché avant le libellé.
-  final String? icon;
+  /// Pictogramme affiché avant le libellé.
+  final IconData? icon;
 }
 
 /// Disposition du groupe de chips.
@@ -138,7 +138,13 @@ class _Chip extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               if (option.icon != null) ...[
-                Text(option.icon!, style: const TextStyle(fontSize: 16)),
+                Icon(
+                  option.icon,
+                  size: 18,
+                  color: isSelected
+                      ? AppColors.primary
+                      : AppColors.neutral700,
+                ),
                 const SizedBox(width: 6),
               ],
               Flexible(

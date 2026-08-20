@@ -52,7 +52,7 @@ Sélection exclusive parmi un ensemble d'options. Remplace les radio buttons sur
 ## Comportement
 
 - **Sélection exclusive** : tap sur un chip sélectionne celui-ci et désélectionne le précédent
-- **Icône optionnelle** : emoji ou icône à gauche du label (ex: "🍽 Alimentation")
+- **Icône optionnelle** : pictogramme Lucide à gauche du libellé
 - **Défilement** : en mode `scroll-h`, le groupe est scrollable horizontalement sans indicateur visible
 
 ---
@@ -61,7 +61,7 @@ Sélection exclusive parmi un ensemble d'options. Remplace les radio buttons sur
 
 | Prop | Type | Description |
 |------|------|-------------|
-| `options` | `{ id: string, label: string, icon?: string }[]` | Liste des options |
+| `options` | `{ id: string, label: string, icon?: IconData }[]` | Liste des options |
 | `selected` | string | ID de l'option sélectionnée |
 | `onChange` | `(id: string) => void` | Callback sélection |
 | `layout` | `'grid-2col'` \| `'scroll-h'` | Mode d'affichage |

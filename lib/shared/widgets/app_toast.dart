@@ -3,6 +3,7 @@ import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_typography.dart';
+import '../../core/theme/app_icons.dart';
 
 enum ToastType { success, error, info }
 
@@ -106,17 +107,17 @@ class _ToastViewState extends State<_ToastView>
         ToastType.success => (
             background: AppColors.primaryLight,
             accent: AppColors.primary,
-            icon: Icons.check_circle,
+            icon: AppIcons.circleCheck,
           ),
         ToastType.error => (
             background: const Color(0xFFFEF2F2),
             accent: AppColors.error,
-            icon: Icons.error,
+            icon: AppIcons.circleX,
           ),
         ToastType.info => (
             background: AppColors.primaryLight,
             accent: AppColors.primary,
-            icon: Icons.info,
+            icon: AppIcons.info,
           ),
       };
 

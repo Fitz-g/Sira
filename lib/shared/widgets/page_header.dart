@@ -3,6 +3,7 @@ import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_typography.dart';
 import 'pressable_scale.dart';
+import '../../core/theme/app_icons.dart';
 
 /// Taille du titre d'en-tête.
 enum PageHeaderVariant {
@@ -97,8 +98,8 @@ class PageHeader extends StatelessWidget {
                       height: slotWidth,
                       child: Icon(
                         leading == HeaderLeadingAction.close
-                            ? Icons.close
-                            : Icons.chevron_left,
+                            ? AppIcons.close
+                            : AppIcons.chevronLeft,
                         size: 26,
                         color: AppColors.onSurface,
                       ),

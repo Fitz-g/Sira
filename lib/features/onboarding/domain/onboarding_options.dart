@@ -1,5 +1,7 @@
+
 import '../../../shared/widgets/selection_card_grid.dart';
 import '../../../shared/widgets/selection_chips.dart';
+import '../../../core/theme/app_icons.dart';
 
 /// Fourchettes de revenus mensuels — spécification 01.3, `OBJ-03-5`.
 const incomeRanges = <ChipOption>[
@@ -24,17 +26,29 @@ const familySituations = <ChipOption>[
 
 /// Objectifs principaux — spécification 01.5, `OBJ-05-4` à `OBJ-05-8`.
 const primaryGoals = <SelectionCardOption>[
-  SelectionCardOption(id: 'budget', label: 'Maîtriser mon budget', icon: '📊'),
-  SelectionCardOption(id: 'debts', label: 'Rembourser mes dettes', icon: '💳'),
-  SelectionCardOption(id: 'save', label: 'Épargner pour un projet', icon: '🎯'),
+  SelectionCardOption(
+    id: 'budget',
+    label: 'Maîtriser mon budget',
+    icon: AppIcons.chartColumn,
+  ),
+  SelectionCardOption(
+    id: 'debts',
+    label: 'Rembourser mes dettes',
+    icon: AppIcons.creditCard,
+  ),
+  SelectionCardOption(
+    id: 'save',
+    label: 'Épargner pour un projet',
+    icon: AppIcons.target,
+  ),
   SelectionCardOption(
     id: 'invest',
     label: 'Investir en bourse (BRVM)',
-    icon: '📈',
+    icon: AppIcons.trendingUp,
   ),
   SelectionCardOption(
     id: 'learn',
     label: 'Mieux comprendre mes finances',
-    icon: '💡',
+    icon: AppIcons.lightbulb,
   ),
 ];

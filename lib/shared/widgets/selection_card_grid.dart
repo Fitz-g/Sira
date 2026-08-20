@@ -15,8 +15,8 @@ class SelectionCardOption {
   final String id;
   final String label;
 
-  /// Emoji ou pictogramme affiché au-dessus du libellé.
-  final String icon;
+  /// Pictogramme affiché au-dessus du libellé.
+  final IconData icon;
 }
 
 /// Grille de cards à sélection exclusive, deux par ligne.
@@ -104,7 +104,11 @@ class _Card extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(option.icon, style: const TextStyle(fontSize: 24)),
+              Icon(
+                option.icon,
+                size: 26,
+                color: isSelected ? AppColors.primary : AppColors.neutral700,
+              ),
               const SizedBox(height: AppSpacing.sm),
               Text(
                 option.label,

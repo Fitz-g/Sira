@@ -23,6 +23,7 @@ abstract final class AppTheme {
 
     return ThemeData(
       useMaterial3: true,
+      fontFamily: AppTypography.family,
       colorScheme: colorScheme,
       scaffoldBackgroundColor: AppColors.surface,
       textTheme: const TextTheme(

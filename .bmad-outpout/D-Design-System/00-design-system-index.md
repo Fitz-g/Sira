@@ -17,6 +17,27 @@
 
 ---
 
+## Iconographie
+
+**Jeu retenu : Lucide** — `lucide_icons_flutter`, trait uniforme de 2 px, licence ISC.
+
+Aucun emoji dans l'interface. Les emojis dépendent de la police système : leur rendu change d'un appareil à l'autre, leur style ne s'accorde à aucune charte, et ils ne prennent pas la couleur du thème. Un jeu d'icônes vectoriel règle les trois.
+
+Phosphor avait été essayé d'abord : il étend `IconData`, devenue une classe `final` dans Flutter 3.47, et ne compile plus. À vérifier avant d'envisager un retour.
+
+| Usage | Icône |
+|-------|-------|
+| Retour, fermer | `chevronLeft`, `x` |
+| Ajouter | `plus` |
+| Validation, erreur, information | `circleCheck`, `circleX`, `info` |
+| Mot de passe | `eye`, `eyeOff` |
+| Score de santé | `gauge` |
+| Catégories de dépenses | `utensils`, `bus`, `house`, `pill`, `partyPopper`, `users`, `piggyBank`, `package` |
+| Objectifs | `chartColumn`, `creditCard`, `target`, `trendingUp`, `lightbulb` |
+| Simulation | `plane`, `shoppingCart`, `piggyBank`, `trendingUp`, `target` |
+
+---
+
 ## Composants
 
 | Fichier | Type | Usages | Statut |

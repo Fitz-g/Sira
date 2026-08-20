@@ -4,6 +4,7 @@ import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_typography.dart';
 import '../../core/utils/currency.dart';
+import '../../core/theme/app_icons.dart';
 
 enum AppInputVariant { text, email, password, number }
 
@@ -188,8 +189,8 @@ class _AppInputState extends State<AppInput> {
                         : 'Masquer le mot de passe',
                     child: Icon(
                       _obscure
-                          ? Icons.visibility_outlined
-                          : Icons.visibility_off_outlined,
+                          ? AppIcons.eye
+                          : AppIcons.eyeOff,
                       size: 20,
                       color: AppColors.neutral500,
                     ),
@@ -199,7 +200,7 @@ class _AppInputState extends State<AppInput> {
               // Confirmation de validité
               if (widget.isValid && !_hasError)
                 const Icon(
-                  Icons.check_circle,
+                  AppIcons.circleCheck,
                   size: 20,
                   color: AppColors.success,
                 ),
