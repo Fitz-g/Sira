@@ -7,50 +7,37 @@
 
 # STATUS DEFINITIONS:
 # ==================
-# Epic Status:
-#   - backlog: Epic pas encore démarré
-#   - in-progress: Epic en cours
-#   - done: Toutes les stories de l'epic sont terminées
+# Epic  : backlog -> in-progress -> done
+# Story : backlog -> ready-for-dev -> in-progress -> review -> done
+# Retro : optional <-> done
 #
-# Epic Status Transitions:
-#   - backlog → in-progress: automatiquement à la création de la première story
-#   - in-progress → done: manuellement quand toutes les stories sont 'done'
-#
-# Story Status:
-#   - backlog: la story n'existe que dans le fichier epics
-#   - ready-for-dev: le fichier de story est créé
-#   - in-progress: développement en cours
-#   - review: prêt pour la revue de code
-#   - done: terminé
-#
-# Retrospective Status:
-#   - optional: peut être menée, sans obligation
-#   - done: menée
+# backlog       : la story n'existe que dans epics.md
+# ready-for-dev : le fichier de story est créé dans implementation-artifacts
+# in-progress   : développement en cours
+# review        : prêt pour la revue de code
+# done          : terminé
 #
 # WORKFLOW NOTES:
 # ===============
 # - Un epic passe en 'in-progress' dès la création de sa première story
-# - Plusieurs stories peuvent avancer en parallèle
-# - Le SM crée la story suivante après que la précédente soit 'done',
-#   pour y intégrer les enseignements
 # - Le dev passe la story en 'review', puis lance la revue de code
+# - Relancer bmad-sprint-planning rafraîchit la détection automatique
 #
 # ÉTAT PARTICULIER DE CE PROJET — 2026-08-20 :
 # ============================================
-# Deux écarts avec le déroulement normal de la méthode, à connaître :
+# Les stories marquées 'done' ou 'in-progress' ont été codées AVANT d'être
+# écrites : le développement a commencé hors de la boucle de la méthode, et le
+# découpage n'est arrivé qu'ensuite. Aucun fichier de story n'existe donc pour
+# elles dans implementation-artifacts, et elles n'ont pas connu l'étape 'review'.
 #
-# 1. epics.md ne contient AUCUNE story. Le workflow bmad-create-epics-and-stories
-#    s'est arrêté après step-02-design-epics ; la décomposition n'a jamais eu
-#    lieu. Ce fichier ne liste donc que les 8 epics.
+# 'in-progress' désigne ici une ébauche livrée mais non finalisée :
+#   1-2 et 1-3 : écrans d'inscription et de connexion sans authentification
+#                réelle, faute de backend
+#   1-9        : tableau de bord provisoire, affiche le profil collecté
 #
-# 2. Du code existe déjà, écrit hors de la boucle stories. Les epics 1 et 3 sont
-#    marqués 'in-progress' pour refléter la réalité, sans qu'aucune story ne les
-#    documente :
-#      - Epic 1 : écran d'accueil et les trois étapes d'onboarding sont faits.
-#        Inscription et connexion sont des ébauches, le dashboard est provisoire.
-#      - Epic 3 : moteur de simulation, écran 03.1 et écran 03.2 sont faits.
-#        Restent la sauvegarde de scénario (FR23), la simulation sans compte
-#        (FR24) et le partage (FR57).
+# L'ordre d'avancement est inversé par rapport à l'ordre logique : l'onboarding
+# (1-5 à 1-7) est terminé alors que l'authentification (1-2 à 1-4) ne l'est pas,
+# parce qu'on a construit d'abord ce qui ne demandait aucun backend.
 
 generated: 2026-08-20
 last_updated: 2026-08-20
@@ -61,41 +48,91 @@ story_location: .bmad-outpout/implementation-artifacts
 
 development_status:
   # Epic 1 — Fondations, Authentification & Onboarding
-  # FR01-FR11, FR50, FR55
   epic-1: in-progress
+  1-1-socle-technique-et-ecran-d-accueil: done
+  1-2-creation-de-compte-par-email: in-progress
+  1-3-connexion-session-et-deconnexion-automatique: in-progress
+  1-4-reinitialisation-du-mot-de-passe: backlog
+  1-5-onboarding-profil-de-base: done
+  1-6-onboarding-situation-financiere: done
+  1-7-onboarding-premier-objectif: done
+  1-8-persistance-du-profil-et-onboarding-reprenable: backlog
+  1-9-tableau-de-bord-initial-personnalise: in-progress
+  1-10-consultation-et-modification-du-profil: backlog
+  1-11-suppression-du-compte-et-des-donnees: backlog
+  1-12-deverrouillage-biometrique: backlog
   epic-1-retrospective: optional
 
   # Epic 2 — Suivi des Dépenses, Budget & Santé Financière
-  # FR12-FR18, FR51-FR54, FR56
   epic-2: backlog
+  2-1-saisie-d-une-depense: backlog
+  2-2-liste-des-depenses-filtrable: backlog
+  2-3-modification-et-suppression-d-une-depense: backlog
+  2-4-definition-d-un-budget-mensuel-par-categorie: backlog
+  2-5-ecart-entre-depenses-reelles-et-budget: backlog
+  2-6-alerte-de-seuil-budgetaire: backlog
+  2-7-score-de-sante-financiere: backlog
+  2-8-etats-vides-pedagogiques: backlog
+  2-9-explications-contextuelles-des-notions-financieres: backlog
+  2-10-suggestion-corrective-quand-le-score-se-degrade: backlog
+  2-11-neutralite-aucune-recommandation-de-produit-tiers: backlog
+  2-12-degradation-gracieuse-en-cas-d-indisponibilite-externe: backlog
   epic-2-retrospective: optional
 
   # Epic 3 — Simulateur Financier UEMOA
-  # FR19-FR25, FR57
   epic-3: in-progress
+  3-1-taux-de-reference-uemoa-configurables: done
+  3-2-moteur-de-projection-d-epargne: done
+  3-3-configuration-d-une-simulation: done
+  3-4-projection-avec-courbe-d-evolution: done
+  3-5-recalcul-instantane-des-parametres: done
+  3-6-comparaison-avec-l-inflation-uemoa: done
+  3-7-sauvegarde-d-un-scenario: backlog
+  3-8-simulation-sans-compte: backlog
+  3-9-partage-d-une-capture-de-simulation: backlog
   epic-3-retrospective: optional
 
   # Epic 4 — Gestion des Dettes & Plan de Remboursement
-  # FR26-FR31
   epic-4: backlog
+  4-1-ajout-d-une-dette: backlog
+  4-2-liste-consolidee-des-dettes: backlog
+  4-3-modification-et-suppression-d-une-dette: backlog
+  4-4-plan-de-remboursement-avalanche-ou-boule-de-neige: backlog
+  4-5-date-de-liberation-financiere: backlog
+  4-6-enregistrement-d-un-remboursement: backlog
   epic-4-retrospective: optional
 
   # Epic 5 — Objectifs d'Épargne
-  # FR32-FR36
   epic-5: backlog
+  5-1-creation-d-un-objectif-d-epargne: backlog
+  5-2-liste-des-objectifs: backlog
+  5-3-enregistrement-d-un-versement: backlog
+  5-4-progression-et-mensualite-recommandee: backlog
+  5-5-projection-d-atteinte-a-la-date-cible: backlog
+  5-6-modification-et-archivage-d-un-objectif: backlog
   epic-5-retrospective: optional
 
   # Epic 6 — Notifications & Engagement
-  # FR43-FR46
   epic-6: backlog
+  6-1-reglage-des-notifications-par-categorie: backlog
+  6-2-notification-de-seuil-budgetaire: backlog
+  6-3-rappel-d-echeance-de-dette: backlog
+  6-4-resume-financier-mensuel: backlog
   epic-6-retrospective: optional
 
   # Epic 7 — Abonnement Premium & Paiements Mobile Money
-  # FR37-FR42
   epic-7: backlog
+  7-1-comparaison-des-formules: backlog
+  7-2-souscription-via-wave-ou-orange-money: backlog
+  7-3-activation-premium-apres-paiement: backlog
+  7-4-bascule-entre-facturation-mensuelle-et-annuelle: backlog
+  7-5-etat-de-l-abonnement-et-renouvellement: backlog
+  7-6-annulation-de-l-abonnement: backlog
   epic-7-retrospective: optional
 
   # Epic 8 — Administration & Monitoring Plateforme
-  # FR47-FR49
   epic-8: backlog
+  8-1-tableau-de-bord-des-metriques: backlog
+  8-2-gestion-des-abonnements: backlog
+  8-3-alertes-d-indisponibilite-des-services-tiers: backlog
   epic-8-retrospective: optional
