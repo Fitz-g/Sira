@@ -1,5 +1,7 @@
 ---
-stepsCompleted: ['step-01-validate-prerequisites', 'step-02-design-epics', 'step-03-create-stories']
+stepsCompleted: ['step-01-validate-prerequisites', 'step-02-design-epics', 'step-03-create-stories', 'step-04-final-validation']
+status: 'complete'
+validatedAt: '2026-08-20'
 inputDocuments:
   - '.bmad-outpout/planning-artifacts/prd.md'
   - '.bmad-outpout/planning-artifacts/architecture.md'
@@ -563,7 +565,12 @@ So that je constate que l'application a compris ma situation.
 **Given** je viens de terminer l'onboarding
 **When** mon tableau de bord s'affiche
 **Then** il me salue par mon prénom
-**And** il affiche un score de santé financière, un résumé du mois, trois actions rapides et un conseil contextuel
+**And** il affiche un résumé de ma situation déclarée, trois actions rapides et un conseil tiré de mes réponses
+
+**Given** je n'ai encore saisi aucune dépense
+**When** je consulte mon tableau de bord
+**Then** l'emplacement du score de santé financière annonce qu'il apparaîtra avec mes premières dépenses
+**And** aucun chiffre inventé n'est affiché à sa place
 
 **Given** le tableau de bord se charge sur un réseau 3G
 **When** je mesure le délai
@@ -600,7 +607,7 @@ So that les conseils restent adaptés à ma réalité.
 
 **Given** je modifie une fourchette de revenus ou ma situation familiale
 **When** j'enregistre
-**Then** le score de santé financière est recalculé
+**Then** les conseils de mon tableau de bord tiennent compte de la nouvelle situation
 
 **Given** l'enregistrement échoue
 **When** l'erreur survient
@@ -832,6 +839,9 @@ So that je puisse encore corriger le tir.
 **Then** elle constate sans culpabiliser
 
 ### Story 2.7: Score de santé financière
+
+> Complète le tableau de bord livré par la story 1.9, qui réserve son
+> emplacement. Répond au FR18.
 
 As a utilisateur non-expert,
 I want un indicateur unique de ma situation,
@@ -1159,6 +1169,10 @@ So that je ne me réjouisse pas d'un gain que l'inflation aura absorbé.
 **Then** la perte de pouvoir d'achat est signalée explicitement
 
 ### Story 3.7: Sauvegarde d'un scénario
+
+> Le verrou Premium s'appuie sur l'indicateur d'abonnement, dont la valeur
+> réelle n'arrive qu'avec l'Epic 7. Jusque-là il vaut « gratuit » : la story
+> reste implémentable et testable, le verrou fonctionne dès sa pose.
 
 As a utilisateur qui hésite entre plusieurs plans,
 I want conserver mes simulations,
@@ -1913,15 +1927,37 @@ So that je réagisse avant que les utilisateurs ne s'en plaignent.
 
 ---
 
-## Spécifications sans exigence associée
+## Périmètre du MVP — décision du 2026-08-20
 
-Quatre vues conçues en phase 3 ne correspondent à aucune exigence fonctionnelle du PRD et ne figurent donc dans aucun epic :
+Quatre vues conçues en phase 3 ne correspondaient à aucune exigence du PRD. **Elles sont écartées du MVP.**
 
-| Spécification | Scénario | Priorité au découpage |
-|---------------|----------|----------------------|
-| 06.1 Assistant financier | 06 — Kofi consulte son assistant | P2 |
-| 07.1 Liste des investissements | 07 — Kofi suit ses investissements BRVM | P2 |
-| 07.2 Détail d'un investissement | 07 | P2 |
-| 08.1 Espace entrepreneur | 08 — Moussa configure son espace | P3 |
+| Spécification | Scénario | Décision |
+|---------------|----------|----------|
+| 06.1 Assistant financier | 06 — Kofi consulte son assistant | hors MVP |
+| 07.1 Liste des investissements | 07 — Kofi suit ses investissements BRVM | hors MVP |
+| 07.2 Détail d'un investissement | 07 | hors MVP |
+| 08.1 Espace entrepreneur | 08 — Moussa configure son espace | hors MVP |
 
-L'assistant financier contextuel et le suivi BRVM figurent pourtant parmi les avantages concurrentiels revendiqués par le Product Brief. Deux voies possibles : écrire les exigences manquantes et créer les epics correspondants, ou assumer que ces vues sortent du périmètre du MVP. **À trancher avant la clôture de la phase de découpage.**
+**Raison :** faire sortir le produit et le confronter à un usage réel prime sur l'exhaustivité. Ces vues seront réexaminées après les premiers retours.
+
+**Ce que cela coûte, en toute lucidité :** l'assistant contextuel et les données BRVM figurent parmi les six avantages concurrentiels du Product Brief. Le MVP se prive donc de deux de ses différenciateurs annoncés. Il en conserve le principal — le moteur de projection accessible et ancré UEMOA — qui reste ce qui distingue Sira des applications de suivi de dépenses.
+
+Les spécifications restent dans `C-UX-Scenarios/`, prêtes à servir.
+
+---
+
+## Dépendances entre epics
+
+Le découpage a été vérifié : aucune story ne dépend d'une story ultérieure de son propre epic. Restent quelques appuis d'un epic sur un autre, tous orientés vers l'arrière sauf mention contraire.
+
+| Story | S'appuie sur | Nature |
+|-------|--------------|--------|
+| 1.9 Tableau de bord | — | Réserve l'emplacement du score sans l'exiger |
+| 2.7 Score | 1.9 | Se greffe sur le tableau de bord existant |
+| 2.10 Suggestion corrective | 2.7 | Même epic, story antérieure |
+| 3.7 Sauvegarde de scénario | Epic 7 | Indicateur d'abonnement, valeur par défaut « gratuit » |
+| 5.1, 5.4 Objectifs | 3.2 Moteur | Réutilise le calcul, ne le duplique pas |
+| 6.2 Alerte budget | Epic 2 | Notifie un événement déjà produit |
+| 6.3 Rappel de dette | Epic 4 | Notifie une échéance déjà connue |
+
+**Les actions rapides du tableau de bord** mènent vers les dépenses, les objectifs et le simulateur. C'est le propre d'un écran d'accueil : il pointe vers des fonctions construites plus tard. Chaque destination affiche son état vide tant que sa fonction n'existe pas, ce qui rend la story 1.9 livrable seule.
