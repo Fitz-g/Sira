@@ -15,13 +15,13 @@ import 'package:sira/shared/widgets/widgets.dart';
 
 late AppDatabase db;
 
-Future<void> _pumpList(WidgetTester tester) async {
+Future<void> _pumpList(WidgetTester tester, {bool justAdded = false}) async {
   await tester.pumpWidget(
     ProviderScope(
       overrides: [appDatabaseProvider.overrideWithValue(db)],
       child: MaterialApp(
         theme: AppTheme.light,
-        home: const ExpenseListScreen(),
+        home: ExpenseListScreen(justAdded: justAdded),
       ),
     ),
   );
@@ -234,5 +234,28 @@ void main() {
 
     // On suit une dépense dans le temps : le filtre ne se remet pas à zéro.
     expect(find.text('Transport ce mois-là'), findsOneWidget);
+  });
+
+  testWidgets('confirme l’ajout quand on arrive depuis la saisie',
+      (tester) async {
+    await _pumpList(tester, justAdded: true);
+
+    expect(find.text('Dépense ajoutée'), findsOneWidget);
+
+    // Laisse le toast se retirer avant la fin du cas.
+    await tester.pump(const Duration(seconds: 3));
+    await tester.pumpAndSettle();
+  });
+
+  testWidgets('ne confirme rien lors d’une visite ordinaire', (tester) async {
+    await _pumpList(tester);
+
+    expect(find.text('Dépense ajoutée'), findsNothing);
+  });
+
+  testWidgets('propose le passage au budget', (tester) async {
+    await _pumpList(tester);
+
+    expect(find.text('Voir mon budget'), findsOneWidget);
   });
 }

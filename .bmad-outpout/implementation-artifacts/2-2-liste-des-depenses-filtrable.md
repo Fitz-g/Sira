@@ -1,6 +1,6 @@
 # Story 2.2: Liste des dépenses filtrable
 
-Status: in-progress
+Status: review
 
 ## Story
 
@@ -23,8 +23,13 @@ Livré et vérifié étape par étape, jamais d'un bloc.
 - [x] **Étape 1** — La ligne de dépense : pastille colorée par catégorie, libellé, note, montant
 - [x] **Étape 2** — La liste groupée par jour et l'état vide
 - [x] **Étape 3** — Le sélecteur de mois, le total, et le filtre par catégorie
-- [ ] **Étape 4** — Le balayage pour supprimer, avec confirmation
-- [ ] **Étape 5** — Le toast d'arrivée depuis la saisie et le lien vers le budget
+- [x] **Étape 4** — Le toast d'arrivée depuis la saisie et le lien vers le budget
+
+> **Le balayage pour supprimer a été retiré de cette story.** Il figurait
+> dans mon découpage initial parce que la spécification 02.2 le décrit —
+> l'écran le porte, en effet. Mais ses critères d'acceptation appartiennent
+> à la **story 2.3**, mot pour mot. Il y retourne, avec la modification
+> d'une dépense qui va naturellement avec.
 
 ## Dev Notes
 
@@ -64,6 +69,22 @@ Claude Opus 5
 ### Debug Log References
 
 ### Completion Notes List
+
+**Étape 4 — le raccordement.** Enregistrer une dépense conduit maintenant à la
+liste, qui la confirme — c'est le parcours décrit par la spécification 02.1, où
+02.2 est la page suivante de 02.1.
+
+Deux défauts dormants réveillés par les tests de cette étape, tous deux dans le
+`Toast`, qu'aucun test n'avait jamais affiché :
+
+1. **Bordure gauche colorée et coins arrondis** — la même faute que dans
+   `AppCard`, corrigée là-bas il y a plusieurs jours et jamais reportée ici. Le
+   toast plantait au rendu. Le liseré devient un élément interne.
+2. **Le minuteur survivait à son widget.** Sans conséquence visible en usage,
+   mais un minuteur qui se déclenche dans le vide est un défaut : il est
+   désormais retenu et annulé à la destruction.
+
+3 tests ajoutés, 93 au total.
 
 **Étape 3, seconde moitié — le filtre par catégorie.** Le filtrage se fait en
 mémoire : les dépenses d'un mois y tiennent largement, et cela évite une
@@ -118,3 +139,15 @@ une base écrite par une version antérieure ne doit pas casser l'affichage.
 Une note faite d'espaces n'ouvre pas de seconde ligne. 6 tests, 67 au total.
 
 ### File List
+
+- `lib/features/transactions/presentation/widgets/expense_row.dart`
+- `lib/features/transactions/presentation/expense_list_screen.dart`
+- `lib/features/transactions/domain/expense_grouping.dart`
+- `lib/features/transactions/domain/expense_filter.dart`
+- `lib/features/transactions/providers/transactions_provider.dart`
+- `lib/shared/widgets/month_selector.dart`, `icon_pill.dart`
+- `lib/shared/widgets/empty_state.dart`, `app_toast.dart` (défauts corrigés)
+- `lib/core/constants/expense_categories.dart` (couleurs)
+- `lib/core/utils/dates.dart` (`relativeDay`)
+- `lib/core/router/app_router.dart`, `dashboard_screen.dart`
+- 4 fichiers de tests

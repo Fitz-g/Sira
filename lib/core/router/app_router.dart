@@ -64,7 +64,9 @@ final appRouter = GoRouter(
     ),
     GoRoute(
       path: Routes.expenses,
-      builder: (context, state) => const ExpenseListScreen(),
+      // `extra` vaut true quand on arrive juste d'enregistrer une dépense.
+      builder: (context, state) =>
+          ExpenseListScreen(justAdded: state.extra == true),
     ),
     GoRoute(
       path: Routes.expenseNew,

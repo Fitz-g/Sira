@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_motion.dart';
@@ -81,15 +83,18 @@ class _ToastViewState extends State<_ToastView>
     end: Offset.zero,
   ).animate(_fade);
 
+  /// Retenu pour être annulé : un minuteur qui survit à son widget se
+  /// déclenche dans le vide, et fait échouer les tests qui l'attrapent.
+  Timer? _timer;
+
   @override
   void initState() {
     super.initState();
-    _run();
+    _controller.forward();
+    _timer = Timer(widget.duration, _dismiss);
   }
 
-  Future<void> _run() async {
-    await _controller.forward();
-    await Future<void>.delayed(widget.duration);
+  Future<void> _dismiss() async {
     if (!mounted) return;
     await _controller.reverse();
     if (!mounted) return;
@@ -98,6 +103,7 @@ class _ToastViewState extends State<_ToastView>
 
   @override
   void dispose() {
+    _timer?.cancel();
     _controller.dispose();
     super.dispose();
   }
@@ -136,36 +142,51 @@ class _ToastViewState extends State<_ToastView>
           opacity: _fade,
           child: Material(
             color: Colors.transparent,
+            // Le liseré est un élément posé à l'intérieur, et non une bordure :
+            // Flutter refuse une bordure aux côtés de couleurs différentes dès
+            // qu'il y a des coins arrondis.
             child: Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.md,
-                vertical: 12,
-              ),
               decoration: BoxDecoration(
                 color: style.background,
                 borderRadius: BorderRadius.circular(AppSizes.radiusInput),
-                border: Border(
-                  top: BorderSide(color: style.accent.withValues(alpha: 0.25)),
-                  right: BorderSide(color: style.accent.withValues(alpha: 0.25)),
-                  bottom:
-                      BorderSide(color: style.accent.withValues(alpha: 0.25)),
-                  left: BorderSide(color: style.accent, width: 4),
+                border: Border.all(
+                  color: style.accent.withValues(alpha: 0.25),
                 ),
+                boxShadow: AppElevation.card,
               ),
-              child: Row(
-                children: [
-                  Icon(style.icon, size: 20, color: style.accent),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Text(
-                      widget.message,
-                      style: AppTypography.headingXxs.copyWith(
-                        color: style.accent,
-                        fontWeight: FontWeight.w500,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(AppSizes.radiusInput - 1),
+                child: IntrinsicHeight(
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      SizedBox(width: 4, child: ColoredBox(color: style.accent)),
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: AppSpacing.md,
+                            vertical: 12,
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(style.icon, size: 20, color: style.accent),
+                              const SizedBox(width: 10),
+                              Expanded(
+                                child: Text(
+                                  widget.message,
+                                  style: AppTypography.headingXxs.copyWith(
+                                    color: style.accent,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
-                    ),
+                    ],
                   ),
-                ],
+                ),
               ),
             ),
           ),

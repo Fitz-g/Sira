@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -131,8 +133,15 @@ class DashboardScreen extends ConsumerWidget {
     );
   }
 
-  void _openExpenses(BuildContext context) =>
-      context.push(Routes.expenseNew);
+  /// Ouvre la saisie ; une dépense enregistrée conduit à la liste, qui la
+  /// confirme. C'est le parcours décrit par la spécification 02.1.
+  Future<void> _openExpenses(BuildContext context) async {
+    final added = await context.push<bool>(Routes.expenseNew);
+    if (added == true && context.mounted) {
+      // On n'attend pas le retour de la liste : rien n'en dépend ici.
+      unawaited(context.push(Routes.expenses, extra: true));
+    }
+  }
 
   void _openExpenseList(BuildContext context) =>
       context.push(Routes.expenses);

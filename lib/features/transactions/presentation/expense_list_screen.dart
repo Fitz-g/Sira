@@ -23,11 +23,41 @@ const _allCategories = '__toutes__';
 /// Étapes 2 et 3 : la liste groupée par jour, l'état vide, la navigation d'un
 /// mois à l'autre et le total du mois consulté. La suppression par balayage et
 /// le lien vers le budget viennent ensuite.
-class ExpenseListScreen extends ConsumerWidget {
-  const ExpenseListScreen({super.key});
+class ExpenseListScreen extends ConsumerStatefulWidget {
+  const ExpenseListScreen({super.key, this.justAdded = false});
+
+  /// Vrai quand on arrive juste d'avoir enregistré une dépense — la liste le
+  /// confirme alors par un toast (`OBJ-08-5`).
+  final bool justAdded;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ExpenseListScreen> createState() => _ExpenseListScreenState();
+}
+
+class _ExpenseListScreenState extends ConsumerState<ExpenseListScreen> {
+  @override
+  void initState() {
+    super.initState();
+    if (widget.justAdded) {
+      // Après le premier rendu : un toast s'appuie sur l'Overlay, qui n'existe
+      // pas encore pendant initState.
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) AppToast.show(context, 'Dépense ajoutée');
+      });
+    }
+  }
+
+  /// Ouvre la saisie, et confirme si une dépense en revient.
+  Future<void> _addExpense() async {
+    final added = await context.push<bool>(Routes.expenseNew);
+    if (!mounted || added != true) return;
+
+    ref.invalidate(filteredExpensesProvider);
+    AppToast.show(context, 'Dépense ajoutée');
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final filter = ref.watch(expenseFilterProvider);
     final expenses = ref.watch(filteredExpensesProvider);
     final total = ref.watch(filteredTotalProvider);
@@ -43,7 +73,7 @@ class ExpenseListScreen extends ConsumerWidget {
               action: HeaderAction(
                 icon: AppIcons.plus,
                 label: 'Ajouter une dépense',
-                onPressed: () => context.push(Routes.expenseNew),
+                onPressed: _addExpense,
               ),
             ),
             // S2 — Navigation d'un mois à l'autre.
@@ -110,9 +140,27 @@ class ExpenseListScreen extends ConsumerWidget {
                 data: (items) => items.isEmpty
                     ? _NothingYet(
                         categoryId: filter.categoryId,
-                        onAdd: () => context.push(Routes.expenseNew),
+                        onAdd: _addExpense,
                       )
                     : _GroupedList(days: groupByDay(items)),
+              ),
+            ),
+            // S5 — Passage au budget.
+            Padding(
+              padding: const EdgeInsets.fromLTRB(
+                AppSizes.paddingPage,
+                0,
+                AppSizes.paddingPage,
+                AppSpacing.md,
+              ),
+              child: SecondaryButton(
+                label: 'Voir mon budget',
+                // TODO(budget): router vers 02.3 quand la story 2.4 existera.
+                onPressed: () => AppToast.show(
+                  context,
+                  'Le budget mensuel arrive au prochain lot.',
+                  type: ToastType.info,
+                ),
               ),
             ),
           ],
