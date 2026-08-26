@@ -33,7 +33,10 @@ class EmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
+    // Défilable : posé sous un en-tête, un sélecteur et des filtres, l'état
+    // vide n'a plus forcément la place de s'afficher en entier — surtout sur
+    // un petit écran. Mieux vaut qu'il défile que qu'il déborde.
+    return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.symmetric(
           horizontal: AppSpacing.xl,

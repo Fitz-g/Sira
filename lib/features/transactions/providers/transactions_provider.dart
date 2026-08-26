@@ -49,6 +49,9 @@ class ExpenseFilterNotifier extends Notifier<ExpenseFilter> {
   void goToNextMonth() {
     if (state.canGoForward) state = state.nextMonth();
   }
+
+  /// `null` remet toutes les catégories.
+  void setCategory(String? id) => state = state.withCategory(id);
 }
 
 final expenseFilterProvider =
@@ -68,7 +71,11 @@ final filteredExpensesProvider =
   final result = await service.forMonth(filter.month);
 
   return switch (result) {
-    Success(:final data) => data,
+    // Le filtrage par catégorie se fait en mémoire : les dépenses d'un mois
+    // tiennent largement, et cela évite une requête par changement de chip.
+    Success(:final data) => filter.categoryId == null
+        ? data
+        : data.where((t) => t.categoryId == filter.categoryId).toList(),
     Failure(:final message) => throw Exception(message),
   };
 });

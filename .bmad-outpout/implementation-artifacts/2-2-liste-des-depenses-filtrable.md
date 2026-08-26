@@ -22,7 +22,7 @@ Livré et vérifié étape par étape, jamais d'un bloc.
 
 - [x] **Étape 1** — La ligne de dépense : pastille colorée par catégorie, libellé, note, montant
 - [x] **Étape 2** — La liste groupée par jour et l'état vide
-- [~] **Étape 3** — Le sélecteur de mois et le total ✓ · le filtre par catégorie reste à faire
+- [x] **Étape 3** — Le sélecteur de mois, le total, et le filtre par catégorie
 - [ ] **Étape 4** — Le balayage pour supprimer, avec confirmation
 - [ ] **Étape 5** — Le toast d'arrivée depuis la saisie et le lien vers le budget
 
@@ -64,6 +64,27 @@ Claude Opus 5
 ### Debug Log References
 
 ### Completion Notes List
+
+**Étape 3, seconde moitié — le filtre par catégorie.** Le filtrage se fait en
+mémoire : les dépenses d'un mois y tiennent largement, et cela évite une
+requête à chaque changement de chip.
+
+Trois points de justesse plutôt que de confort :
+
+- **Un total filtré nomme ce qu'il compte.** « Dépensé ce mois » sur un chiffre
+  qui n'inclut que le transport serait un mensonge — sur une app financière, un
+  chiffre mal nommé fait plus de dégâts qu'un chiffre absent. Le libellé devient
+  « Transport ce mois ».
+- **Une catégorie vide et un mois vide ne disent pas la même chose.** Dans le
+  premier cas l'utilisateur a peut-être simplement mal filtré : le message le
+  renvoie vers « Toutes » plutôt que de lui annoncer qu'il n'a rien dépensé.
+- **Changer de mois conserve la catégorie.** On suit une dépense dans le temps ;
+  refiltrer à chaque pas serait absurde.
+
+**Défaut corrigé au passage :** `EmptyState` débordait de 54 pixels une fois
+placé sous l'en-tête, le sélecteur et les chips. Il devient défilable — le
+problème serait apparu sur tout petit écran, et il touchait tous les écrans qui
+l'utilisent.
 
 **Étape 3, première moitié — la navigation par mois.** Un état de filtrage
 distinct porte le mois consulté. Il est volontairement séparé de

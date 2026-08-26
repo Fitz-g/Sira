@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/router/app_router.dart';
+import '../../../core/constants/expense_categories.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_icons.dart';
 import '../../../core/theme/app_spacing.dart';
@@ -13,6 +14,9 @@ import '../../../shared/widgets/widgets.dart';
 import '../domain/expense_grouping.dart';
 import '../providers/transactions_provider.dart';
 import 'widgets/expense_row.dart';
+
+/// Identifiant du chip « Toutes » — ne correspond à aucune catégorie réelle.
+const _allCategories = '__toutes__';
 
 /// 02.2 — Liste des dépenses.
 ///
@@ -67,6 +71,27 @@ class ExpenseListScreen extends ConsumerWidget {
               child: _MonthTotal(
                 total: total.valueOrNull,
                 isCurrentMonth: filter.isCurrentMonth,
+                categoryId: filter.categoryId,
+              ),
+            ),
+            const SizedBox(height: AppSpacing.md),
+
+            // Filtrage par catégorie, juste au-dessus de ce qu'il restreint.
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSizes.paddingPage,
+              ),
+              child: SelectionChips(
+                layout: ChipsLayout.scroll,
+                options: [
+                  const ChipOption(id: _allCategories, label: 'Toutes'),
+                  for (final c in expenseCategories)
+                    ChipOption(id: c.id, label: c.label, icon: c.icon),
+                ],
+                selectedId: filter.categoryId ?? _allCategories,
+                onSelected: (id) => ref
+                    .read(expenseFilterProvider.notifier)
+                    .setCategory(id == _allCategories ? null : id),
               ),
             ),
             const SizedBox(height: AppSpacing.lg),
@@ -84,6 +109,7 @@ class ExpenseListScreen extends ConsumerWidget {
                 ),
                 data: (items) => items.isEmpty
                     ? _NothingYet(
+                        categoryId: filter.categoryId,
                         onAdd: () => context.push(Routes.expenseNew),
                       )
                     : _GroupedList(days: groupByDay(items)),
@@ -184,12 +210,31 @@ class _DaySection extends StatelessWidget {
 
 /// Aucune dépense ce mois — FR51, UX-DR1.
 class _NothingYet extends StatelessWidget {
-  const _NothingYet({required this.onAdd});
+  const _NothingYet({required this.onAdd, this.categoryId});
 
   final VoidCallback onAdd;
+  final String? categoryId;
 
   @override
   Widget build(BuildContext context) {
+    // Un mois vide et une catégorie vide n'appellent pas le même message :
+    // dans le second cas, l'utilisateur a peut-être simplement mal filtré.
+    if (categoryId != null) {
+      final categorie = categoryById(categoryId!);
+      return EmptyState(
+        illustration: IconPill(
+          icon: categorie.icon,
+          color: categorie.color,
+          size: 72,
+        ),
+        title: 'Rien en ${categorie.label} ce mois',
+        subtitle: 'Choisis « Toutes » pour revoir l’ensemble de tes dépenses.',
+        ctaLabel: 'Noter une dépense',
+        onCtaPressed: onAdd,
+        useSecondaryCta: true,
+      );
+    }
+
     return EmptyState(
       illustration: const IconPill(icon: AppIcons.package, size: 72),
       title: 'Pas encore de dépenses ce mois',
@@ -225,12 +270,32 @@ class _Problem extends StatelessWidget {
 
 /// Total du mois consulté — `OBJ-08-3`.
 class _MonthTotal extends StatelessWidget {
-  const _MonthTotal({required this.total, required this.isCurrentMonth});
+  const _MonthTotal({
+    required this.total,
+    required this.isCurrentMonth,
+    this.categoryId,
+  });
 
   /// `null` tant que la lecture n'a pas abouti.
   final int? total;
 
   final bool isCurrentMonth;
+
+  /// Catégorie retenue, s'il y en a une.
+  final String? categoryId;
+
+  /// Un total filtré doit dire ce qu'il compte.
+  ///
+  /// « Dépensé ce mois » sur un chiffre qui n'inclut que l'alimentation serait
+  /// un mensonge — et sur une app financière, un chiffre mal nommé fait plus de
+  /// dégâts qu'un chiffre absent.
+  String get _label {
+    if (categoryId != null) {
+      final categorie = categoryById(categoryId!).label;
+      return isCurrentMonth ? '$categorie ce mois' : '$categorie ce mois-là';
+    }
+    return isCurrentMonth ? 'Dépensé ce mois' : 'Dépensé ce mois-là';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -239,7 +304,7 @@ class _MonthTotal extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            isCurrentMonth ? 'Dépensé ce mois' : 'Dépensé ce mois-là',
+            _label,
             style: AppTypography.headingXxs.copyWith(
               color: AppColors.neutral500,
             ),
