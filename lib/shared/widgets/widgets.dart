@@ -12,6 +12,7 @@ export 'duration_slider.dart';
 export 'empty_state.dart';
 export 'icon_pill.dart';
 export 'labeled_switch.dart';
+export 'month_selector.dart';
 export 'page_header.dart';
 export 'pressable_scale.dart';
 export 'primary_button.dart';

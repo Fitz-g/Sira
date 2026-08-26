@@ -22,7 +22,7 @@ Livré et vérifié étape par étape, jamais d'un bloc.
 
 - [x] **Étape 1** — La ligne de dépense : pastille colorée par catégorie, libellé, note, montant
 - [x] **Étape 2** — La liste groupée par jour et l'état vide
-- [ ] **Étape 3** — Le sélecteur de mois, le total, et le filtre par catégorie
+- [~] **Étape 3** — Le sélecteur de mois et le total ✓ · le filtre par catégorie reste à faire
 - [ ] **Étape 4** — Le balayage pour supprimer, avec confirmation
 - [ ] **Étape 5** — Le toast d'arrivée depuis la saisie et le lien vers le budget
 
@@ -64,6 +64,21 @@ Claude Opus 5
 ### Debug Log References
 
 ### Completion Notes List
+
+**Étape 3, première moitié — la navigation par mois.** Un état de filtrage
+distinct porte le mois consulté. Il est volontairement séparé de
+`currentMonthExpensesProvider`, que le tableau de bord utilise : parcourir
+l'historique depuis la liste ne doit pas changer le total du tableau de bord.
+
+Le chevron avant se désactive au-delà du mois en cours — une dépense ne se
+saisit pas dans le futur, et un mois vide par nature n'apprendrait rien.
+Désactivé et non masqué : un bouton visiblement inerte vaut mieux qu'un bouton
+qui ne répond pas sans dire pourquoi.
+
+Pendant la lecture, le total affiche un tiret et non zéro : « 0 » ferait croire
+un instant qu'il n'y a rien.
+
+`MonthSelector` rejoint le Design System. 9 tests, 85 au total.
 
 **Étape 2 — la liste.** Regroupement par journée, chaque jour avec son en-tête
 et son total. `Dates.relativeDay` dit « Aujourd'hui » et « Hier » plutôt qu'une

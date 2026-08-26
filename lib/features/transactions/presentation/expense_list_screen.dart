@@ -16,14 +16,17 @@ import 'widgets/expense_row.dart';
 
 /// 02.2 — Liste des dépenses.
 ///
-/// Étape 2 : la liste groupée par jour et l'état vide. Le sélecteur de mois,
-/// la suppression par balayage et le lien vers le budget viennent ensuite.
+/// Étapes 2 et 3 : la liste groupée par jour, l'état vide, la navigation d'un
+/// mois à l'autre et le total du mois consulté. La suppression par balayage et
+/// le lien vers le budget viennent ensuite.
 class ExpenseListScreen extends ConsumerWidget {
   const ExpenseListScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final expenses = ref.watch(currentMonthExpensesProvider);
+    final filter = ref.watch(expenseFilterProvider);
+    final expenses = ref.watch(filteredExpensesProvider);
+    final total = ref.watch(filteredTotalProvider);
 
     return Scaffold(
       backgroundColor: AppColors.surfacePage,
@@ -39,6 +42,35 @@ class ExpenseListScreen extends ConsumerWidget {
                 onPressed: () => context.push(Routes.expenseNew),
               ),
             ),
+            // S2 — Navigation d'un mois à l'autre.
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSizes.paddingPage,
+              ),
+              child: MonthSelector(
+                label: Dates.monthYear(filter.month),
+                onPrevious:
+                    ref.read(expenseFilterProvider.notifier).goToPreviousMonth,
+                // Rien à consulter au-delà du mois en cours.
+                onNext: filter.canGoForward
+                    ? ref.read(expenseFilterProvider.notifier).goToNextMonth
+                    : null,
+              ),
+            ),
+            const SizedBox(height: AppSpacing.md),
+
+            // S3 — Total du mois consulté.
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSizes.paddingPage,
+              ),
+              child: _MonthTotal(
+                total: total.valueOrNull,
+                isCurrentMonth: filter.isCurrentMonth,
+              ),
+            ),
+            const SizedBox(height: AppSpacing.lg),
+
             Expanded(
               child: expenses.when(
                 loading: () => const Center(
@@ -48,7 +80,7 @@ class ExpenseListScreen extends ConsumerWidget {
                   ),
                 ),
                 error: (_, __) => _Problem(
-                  onRetry: () => ref.invalidate(currentMonthExpensesProvider),
+                  onRetry: () => ref.invalidate(filteredExpensesProvider),
                 ),
                 data: (items) => items.isEmpty
                     ? _NothingYet(
@@ -187,6 +219,40 @@ class _Problem extends StatelessWidget {
       ctaLabel: 'Réessayer',
       onCtaPressed: onRetry,
       useSecondaryCta: true,
+    );
+  }
+}
+
+/// Total du mois consulté — `OBJ-08-3`.
+class _MonthTotal extends StatelessWidget {
+  const _MonthTotal({required this.total, required this.isCurrentMonth});
+
+  /// `null` tant que la lecture n'a pas abouti.
+  final int? total;
+
+  final bool isCurrentMonth;
+
+  @override
+  Widget build(BuildContext context) {
+    return AppCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            isCurrentMonth ? 'Dépensé ce mois' : 'Dépensé ce mois-là',
+            style: AppTypography.headingXxs.copyWith(
+              color: AppColors.neutral500,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            // Un tiret plutôt qu'un zéro pendant la lecture : afficher « 0 »
+            // ferait croire un instant qu'il n'y a rien.
+            total == null ? '—' : Currency.format(total!),
+            style: AppTypography.tabular(AppTypography.headingLg),
+          ),
+        ],
+      ),
     );
   }
 }

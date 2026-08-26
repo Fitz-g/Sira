@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../data/local/app_database.dart';
 import '../../../data/models/result.dart';
 import '../../../data/services/transactions_service.dart';
+import '../domain/expense_filter.dart';
 
 /// Instance unique de la base locale, fermée avec l'application.
 final appDatabaseProvider = Provider<AppDatabase>((ref) {
@@ -35,5 +36,45 @@ final currentMonthExpensesProvider =
 /// Total dépensé ce mois-ci, en FCFA entiers.
 final currentMonthTotalProvider = FutureProvider<int>((ref) async {
   final expenses = await ref.watch(currentMonthExpensesProvider.future);
+  return expenses.fold<int>(0, (sum, t) => sum + t.amount);
+});
+
+/// Mois actuellement consulté dans la liste des dépenses.
+class ExpenseFilterNotifier extends Notifier<ExpenseFilter> {
+  @override
+  ExpenseFilter build() => ExpenseFilter.thisMonth();
+
+  void goToPreviousMonth() => state = state.previousMonth();
+
+  void goToNextMonth() {
+    if (state.canGoForward) state = state.nextMonth();
+  }
+}
+
+final expenseFilterProvider =
+    NotifierProvider<ExpenseFilterNotifier, ExpenseFilter>(
+  ExpenseFilterNotifier.new,
+);
+
+/// Dépenses du mois consulté.
+///
+/// Distinct de [currentMonthExpensesProvider], qui reste sur le mois en cours :
+/// parcourir l'historique depuis la liste ne doit pas changer le total affiché
+/// sur le tableau de bord.
+final filteredExpensesProvider =
+    FutureProvider<List<Transaction>>((ref) async {
+  final filter = ref.watch(expenseFilterProvider);
+  final service = ref.watch(transactionsServiceProvider);
+  final result = await service.forMonth(filter.month);
+
+  return switch (result) {
+    Success(:final data) => data,
+    Failure(:final message) => throw Exception(message),
+  };
+});
+
+/// Total du mois consulté, en FCFA entiers.
+final filteredTotalProvider = FutureProvider<int>((ref) async {
+  final expenses = await ref.watch(filteredExpensesProvider.future);
   return expenses.fold<int>(0, (sum, t) => sum + t.amount);
 });

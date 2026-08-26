@@ -15,6 +15,7 @@ abstract final class AppIcons {
 
   // --- Navigation et actions ---
   static const chevronLeft = IconData(57454, fontFamily: _f, fontPackage: _p);
+  static const chevronRight = IconData(57455, fontFamily: _f, fontPackage: _p);
   static const close = IconData(57778, fontFamily: _f, fontPackage: _p);
   static const plus = IconData(57661, fontFamily: _f, fontPackage: _p);
   static const eye = IconData(57530, fontFamily: _f, fontPackage: _p);
