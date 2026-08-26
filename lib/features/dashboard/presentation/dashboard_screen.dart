@@ -85,7 +85,10 @@ class DashboardScreen extends ConsumerWidget {
                             onAddExpense: () => _openExpenses(context),
                           ),
                           data: (total) => total > 0
-                              ? _MonthTotal(total: total)
+                              ? _MonthTotal(
+                                  total: total,
+                                  onTap: () => _openExpenseList(context),
+                                )
                               : _NoExpensesYet(
                                   onAddExpense: () => _openExpenses(context),
                                 ),
@@ -130,6 +133,9 @@ class DashboardScreen extends ConsumerWidget {
 
   void _openExpenses(BuildContext context) =>
       context.push(Routes.expenseNew);
+
+  void _openExpenseList(BuildContext context) =>
+      context.push(Routes.expenses);
 
   // L'écran des objectifs n'existe pas encore. Plutôt qu'un bouton mort, on
   // annonce ce qui vient — l'utilisateur sait où il en est.
@@ -319,13 +325,15 @@ class _QuickAction extends StatelessWidget {
 
 /// Total dépensé ce mois-ci.
 class _MonthTotal extends StatelessWidget {
-  const _MonthTotal({required this.total});
+  const _MonthTotal({required this.total, this.onTap});
 
   final int total;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
     return AppCard(
+      onTap: onTap,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

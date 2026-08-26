@@ -9,6 +9,7 @@ import '../../features/onboarding/presentation/onboarding_profile_screen.dart';
 import '../../features/onboarding/presentation/onboarding_situation_screen.dart';
 import '../../features/simulation/domain/simulation_models.dart';
 import '../../features/transactions/presentation/expense_entry_screen.dart';
+import '../../features/transactions/presentation/expense_list_screen.dart';
 import '../../features/simulation/presentation/simulation_result_screen.dart';
 import '../../features/simulation/presentation/simulator_screen.dart';
 
@@ -23,6 +24,7 @@ abstract final class Routes {
   static const onboardingGoal = '/onboarding/objectif';
 
   static const dashboard = '/accueil';
+  static const expenses = '/depenses';
   static const expenseNew = '/depenses/ajouter';
 
   static const simulator = '/simulateur';
@@ -59,6 +61,10 @@ final appRouter = GoRouter(
     GoRoute(
       path: Routes.dashboard,
       builder: (context, state) => const DashboardScreen(),
+    ),
+    GoRoute(
+      path: Routes.expenses,
+      builder: (context, state) => const ExpenseListScreen(),
     ),
     GoRoute(
       path: Routes.expenseNew,

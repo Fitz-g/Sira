@@ -21,10 +21,10 @@ so that je comprenne où part mon argent.
 Livré et vérifié étape par étape, jamais d'un bloc.
 
 - [x] **Étape 1** — La ligne de dépense : pastille colorée par catégorie, libellé, note, montant
-- [ ] **Étape 2** — La liste groupée par jour et l'état vide
-- [ ] **Étape 3** — Le sélecteur de mois et le total
+- [x] **Étape 2** — La liste groupée par jour et l'état vide
+- [ ] **Étape 3** — Le sélecteur de mois, le total, et le filtre par catégorie
 - [ ] **Étape 4** — Le balayage pour supprimer, avec confirmation
-- [ ] **Étape 5** — Le raccordement : route, toast d'arrivée, lien vers le budget
+- [ ] **Étape 5** — Le toast d'arrivée depuis la saisie et le lien vers le budget
 
 ## Dev Notes
 
@@ -64,6 +64,16 @@ Claude Opus 5
 ### Debug Log References
 
 ### Completion Notes List
+
+**Étape 2 — la liste.** Regroupement par journée, chaque jour avec son en-tête
+et son total. `Dates.relativeDay` dit « Aujourd'hui » et « Hier » plutôt qu'une
+date : un utilisateur qui relit ses dépenses du jour le lit plus vite.
+`groupByDay` est une fonction pure, testée seule, sans Flutter ni base.
+Construction paresseuse pour tenir à 10 000 lignes (NFR-SC3).
+
+La route `/depenses` est déclarée dès cette étape, et non à la fin comme prévu
+initialement : sans elle, les étapes 2 à 4 auraient été invisibles à l'écran.
+La carte du mois, sur le tableau de bord, y mène. 9 tests, 76 au total.
 
 **Étape 1 — la ligne de dépense.** Huit teintes distinctes, une par catégorie ;
 un test vérifie qu'aucune ne se répète, sans quoi la pastille perdrait son

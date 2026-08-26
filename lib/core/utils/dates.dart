@@ -22,6 +22,24 @@ abstract final class Dates {
         end: DateTime(date.year, date.month + 1, 0),
       );
 
+  /// Libellé d'un jour, relatif quand c'est possible.
+  ///
+  /// « Aujourd'hui », « Hier », sinon « 15 août ». Un utilisateur qui relit ses
+  /// dépenses du jour lit « Aujourd'hui » plus vite qu'une date.
+  static String relativeDay(DateTime date, {DateTime? now}) {
+    final today = now ?? DateTime.now();
+    final jour = DateTime(date.year, date.month, date.day);
+    final ceJour = DateTime(today.year, today.month, today.day);
+    final ecart = ceJour.difference(jour).inDays;
+
+    if (ecart == 0) return 'Aujourd’hui';
+    if (ecart == 1) return 'Hier';
+
+    // L'année n'apparaît que si elle diffère de l'année courante.
+    final format = jour.year == ceJour.year ? 'd MMMM' : 'd MMMM yyyy';
+    return DateFormat(format, 'fr_FR').format(jour);
+  }
+
   /// Durée en toutes lettres : `8 mois`, `1 an`, `2 ans et 6 mois`.
   static String durationLabel(int months) {
     if (months < 12) return '$months mois';
