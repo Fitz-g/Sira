@@ -126,7 +126,9 @@ class _Chip extends StatelessWidget {
           height: height,
           padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
           decoration: BoxDecoration(
-            color: isSelected ? AppColors.primaryLight : AppColors.neutral100,
+            // Blanc au repos : sur le fond gris de la page, un chip gris
+            // clair se confondrait avec elle.
+            color: isSelected ? AppColors.primaryLight : AppColors.surface,
             borderRadius: BorderRadius.circular(AppSizes.radiusChip),
             border: Border.all(
               color: isSelected ? AppColors.primary : AppColors.neutral300,

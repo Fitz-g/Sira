@@ -17,8 +17,10 @@
 | `color-primary` | Identité brand, actions principales | CTA, chips sélectionnés, progress bars, toggle on, nav active, focus borders, arc score vert |
 | `color-primary-light` | Fond teinté subtil | Card insight IA, bande contexte profil, fond chips sélectionnés |
 | `color-on-primary` | Texte sur primary | Texte bouton CTA, icône sur fond primary |
-| `color-surface` | Fond principal des pages | Background de toutes les pages |
-| `color-surface-card` | Fond des cards | Background des cards informationnelles |
+| `color-surface-page` | Fond des pages — gris très clair `#F5F6F8` | Background de toutes les pages |
+| `color-surface` | Blanc | Cards, champs de saisie, chips au repos |
+| `color-surface-card` | Fond des cards — blanc | Background des cards informationnelles |
+| `color-shadow` | Ombre portée `#101828` à 8 % | Élévation des cards |
 | `color-on-surface` | Texte principal | Titres, corps de texte, valeurs |
 | `color-on-surface-secondary` | Texte secondaire | Labels, légendes, placeholders, nav inactive |
 | `color-border` | Bordures par défaut | Bordures champs de saisie, séparateurs, dividers |
@@ -120,3 +122,26 @@ de consommation d'une enveloppe budgétaire.
 ---
 
 _Extrait du Design System — App Finance UEMOA_
+
+
+---
+
+## Révision du 2026-08-21 — profondeur par contraste
+
+Jusqu'ici : cartes blanches sur fond blanc, séparées par un filet gris d'un
+pixel. Résultat plat, qui évoquait le formulaire administratif plus que le
+produit.
+
+**Ce qui change :** le fond de page devient gris très clair, les cartes restent
+blanches et portent une ombre douce. La bordure disparaît — ce sont le contraste
+et l'ombre qui délimitent la carte, pas un trait.
+
+**Conséquence obligatoire :** tout ce qui était en `color-neutral-100` et posé
+directement sur la page — chips au repos, champs de saisie — passe au **blanc**.
+Un gris clair sur un fond gris clair devient invisible.
+
+La règle tient en une phrase : **le fond de page est gris, tout ce qui porte du
+contenu ou reçoit une interaction est blanc.**
+
+La teinte de marque est inchangée. Le changement de perception vient de la
+structure, pas de la couleur.

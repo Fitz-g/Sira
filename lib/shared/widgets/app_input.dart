@@ -122,7 +122,7 @@ class _AppInputState extends State<AppInput> {
           height: AppSizes.inputHeight,
           padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
           decoration: BoxDecoration(
-            color: AppColors.neutral100,
+            color: AppColors.surface,
             borderRadius: BorderRadius.circular(AppSizes.radiusInput),
             border: Border.all(color: _borderColor, width: _borderWidth),
           ),

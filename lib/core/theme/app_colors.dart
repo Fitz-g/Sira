@@ -29,11 +29,22 @@ abstract final class AppColors {
   static const error = Color(0xFFDC2626);
 
   // --- Surfaces ---
-  /// Fond des pages.
+  /// Fond des pages — gris très clair.
+  ///
+  /// C'est lui qui fait exister les cartes : blanches sur gris, elles se
+  /// détachent d'elles-mêmes, sans avoir besoin d'une bordure pour marquer
+  /// leur limite. Tout ce qui est contenu ou interactif reste blanc.
+  static const surfacePage = Color(0xFFF5F6F8);
+
+  /// Blanc — cartes, champs de saisie, chips au repos.
   static const surface = Color(0xFFFFFFFF);
 
   /// Fond des cards.
   static const surfaceCard = Color(0xFFFFFFFF);
+
+  /// Ombre portée des cartes. Très diffuse et très peu opaque : elle doit se
+  /// deviner, pas se voir.
+  static const shadow = Color(0x14101828);
 
   // --- Échelle de neutres ---
   /// Fond des champs de saisie, chips non sélectionnés, skeletons.

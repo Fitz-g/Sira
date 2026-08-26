@@ -10,6 +10,7 @@ export 'app_input.dart';
 export 'app_toast.dart';
 export 'duration_slider.dart';
 export 'empty_state.dart';
+export 'icon_pill.dart';
 export 'labeled_switch.dart';
 export 'page_header.dart';
 export 'pressable_scale.dart';

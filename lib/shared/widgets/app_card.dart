@@ -44,7 +44,9 @@ class AppCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: isInfo ? AppColors.primaryLight : AppColors.surfaceCard,
         borderRadius: BorderRadius.circular(AppSizes.radiusCard),
-        border: Border.all(color: _borderColor(isInfo)),
+        // Pas de bordure : c'est le fond gris de la page qui détache la carte,
+        // et l'ombre qui lui donne son épaisseur. Un filet en plus alourdirait.
+        boxShadow: isInfo ? null : AppElevation.card,
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(AppSizes.radiusCard - 1),
@@ -76,9 +78,6 @@ class AppCard extends StatelessWidget {
 
     return PressableScale(onTap: onTap, child: container);
   }
-
-  Color _borderColor(bool isInfo) =>
-      isInfo ? AppColors.primary.withValues(alpha: 0.2) : AppColors.neutral300;
 }
 
 /// Une métrique : un libellé et sa valeur.

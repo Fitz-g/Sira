@@ -1,3 +1,7 @@
+import 'package:flutter/widgets.dart';
+
+import 'app_colors.dart';
+
 /// Tokens d'espacement Sira — Design System `tokens/spacing.md`.
 ///
 /// L'espacement encode la proximité sémantique : plus deux éléments
@@ -28,13 +32,13 @@ abstract final class AppSizes {
   static const paddingCard = 16.0;
 
   /// Rayon des cards et des boutons.
-  static const radiusCard = 12.0;
+  static const radiusCard = 16.0;
 
   /// Rayon des chips (forme pilule).
   static const radiusChip = 20.0;
 
   /// Rayon des champs de saisie.
-  static const radiusInput = 8.0;
+  static const radiusInput = 12.0;
 
   /// Hauteur minimale d'un bouton primaire.
   static const buttonPrimaryHeight = 56.0;
@@ -60,4 +64,25 @@ abstract final class AppSizes {
 
   /// Zone tactile minimale (NFR-A1 : ≥ 44 × 44 pt).
   static const minTouchTarget = 44.0;
+}
+
+/// Élévation des surfaces.
+abstract final class AppElevation {
+  /// Ombre d'une carte posée sur le fond de page.
+  ///
+  /// Deux couches : une ombre courte qui pose la carte, une plus large et plus
+  /// diffuse qui lui donne son volume. C'est ce qui distingue une ombre
+  /// crédible d'un halo gris.
+  static const card = <BoxShadow>[
+    BoxShadow(
+      color: AppColors.shadow,
+      blurRadius: 2,
+      offset: Offset(0, 1),
+    ),
+    BoxShadow(
+      color: AppColors.shadow,
+      blurRadius: 12,
+      offset: Offset(0, 4),
+    ),
+  ];
 }

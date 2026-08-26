@@ -78,6 +78,7 @@ Les composants sont implémentés dans `lib/shared/widgets/` (Flutter/Dart) :
 | — | DatePicker | 2 specs | À définir au fil du code |
 | — | Avatar | 2 specs | À définir au fil du code |
 | — | SkeletonLoader | 4 specs | À définir au fil du code |
+| [IconPill](../../lib/shared/widgets/icon_pill.dart) | Pictogramme en pastille teintée | transverse | Extrait — `icon_pill.dart` |
 
 ---
 

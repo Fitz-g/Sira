@@ -66,9 +66,9 @@ Plus deux éléments sont proches, plus ils semblent liés. L'espacement encode 
 |-------|--------|-------|
 | `padding-page` | 20px | Padding horizontal des pages |
 | `padding-card` | 16px | Padding interne des cards |
-| `radius-card` | 12px | Rayon de bordure des cards et boutons |
+| `radius-card` | 16px | Rayon des cards et des boutons |
 | `radius-chip` | 20px | Rayon de bordure des chips (pill) |
-| `radius-input` | 8px | Rayon de bordure des champs de saisie |
+| `radius-input` | 12px | Rayon des champs de saisie |
 
 ---
 
@@ -98,9 +98,9 @@ abstract final class AppSpacing {
 abstract final class AppSizes {
   static const paddingPage = 20.0;
   static const paddingCard = 16.0;
-  static const radiusCard  = 12.0;
+  static const radiusCard  = 16.0;
   static const radiusChip  = 20.0;
-  static const radiusInput = 8.0;
+  static const radiusInput = 12.0;
   static const navBarHeight = 56.0;
   static const minTouchTarget = 44.0; // NFR-A1
 }

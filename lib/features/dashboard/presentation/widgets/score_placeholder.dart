@@ -32,10 +32,9 @@ class ScorePlaceholder extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const Icon(
-                AppIcons.gauge,
-                size: 28,
-                color: AppColors.neutral300,
+              const IconPill(
+                icon: AppIcons.gauge,
+                color: AppColors.neutral500,
               ),
               const SizedBox(width: AppSpacing.sm),
               Flexible(

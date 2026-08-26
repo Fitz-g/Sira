@@ -25,7 +25,7 @@ abstract final class AppTheme {
       useMaterial3: true,
       fontFamily: AppTypography.family,
       colorScheme: colorScheme,
-      scaffoldBackgroundColor: AppColors.surface,
+      scaffoldBackgroundColor: AppColors.surfacePage,
       textTheme: const TextTheme(
         displayLarge: AppTypography.heading4xl,
         displayMedium: AppTypography.heading3xl,
@@ -38,7 +38,7 @@ abstract final class AppTheme {
         bodyMedium: AppTypography.headingXxs,
       ),
       appBarTheme: const AppBarTheme(
-        backgroundColor: AppColors.surface,
+        backgroundColor: AppColors.surfacePage,
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         centerTitle: false,
@@ -55,7 +55,6 @@ abstract final class AppTheme {
         elevation: 0,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppSizes.radiusCard),
-          side: const BorderSide(color: AppColors.neutral300),
         ),
       ),
       splashFactory: NoSplash.splashFactory,

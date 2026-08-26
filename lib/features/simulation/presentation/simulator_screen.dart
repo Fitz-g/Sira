@@ -65,7 +65,7 @@ class _SimulatorScreenState extends State<SimulatorScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.surface,
+      backgroundColor: AppColors.surfacePage,
       body: SafeArea(
         child: Column(
           children: [

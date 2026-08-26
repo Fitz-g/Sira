@@ -41,7 +41,7 @@ class _OnboardingSituationScreenState
     final notifier = ref.read(onboardingProvider.notifier);
 
     return Scaffold(
-      backgroundColor: AppColors.surface,
+      backgroundColor: AppColors.surfacePage,
       body: SafeArea(
         child: Column(
           children: [

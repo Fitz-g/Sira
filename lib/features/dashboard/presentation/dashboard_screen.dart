@@ -32,7 +32,7 @@ class DashboardScreen extends ConsumerWidget {
     final month = Dates.monthYear(DateTime.now());
 
     return Scaffold(
-      backgroundColor: AppColors.surface,
+      backgroundColor: AppColors.surfacePage,
       body: SafeArea(
         child: Column(
           children: [
@@ -106,11 +106,7 @@ class DashboardScreen extends ConsumerWidget {
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Icon(
-                            AppIcons.lightbulb,
-                            size: 20,
-                            color: AppColors.primary,
-                          ),
+                          const IconPill(icon: AppIcons.lightbulb, size: 34),
                           const SizedBox(width: AppSpacing.sm),
                           Expanded(
                             child: Text(
@@ -296,20 +292,21 @@ class _QuickAction extends StatelessWidget {
       onTap: onPressed,
       semanticLabel: label,
       child: Container(
-        height: 72,
+        height: 88,
         decoration: BoxDecoration(
-          border: Border.all(color: AppColors.primary, width: 1.5),
+          color: AppColors.surfaceCard,
           borderRadius: BorderRadius.circular(AppSizes.radiusCard),
+          boxShadow: AppElevation.card,
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, size: 22, color: AppColors.primary),
-            const SizedBox(height: 4),
+            IconPill(icon: icon, size: 34),
+            const SizedBox(height: 6),
             Text(
               label,
               style: AppTypography.headingXxs.copyWith(
-                color: AppColors.primary,
+                color: AppColors.onSurface,
                 fontWeight: FontWeight.w600,
               ),
             ),

@@ -26,7 +26,7 @@ class SimulationResultScreen extends StatelessWidget {
     final duration = Dates.durationLabel(params.durationMonths);
 
     return Scaffold(
-      backgroundColor: AppColors.surface,
+      backgroundColor: AppColors.surfacePage,
       body: SafeArea(
         child: Column(
           children: [

@@ -208,3 +208,20 @@ Résumé de paramètres en lignes label/valeur.
 ---
 
 _Composant Design System — App Finance UEMOA_
+
+
+---
+
+## Révision du 2026-08-21 — l'ombre remplace la bordure
+
+La card n'a plus de bordure. Elle est blanche, posée sur un fond de page gris,
+et porte une ombre à deux couches : une courte qui la pose, une large et diffuse
+qui lui donne son volume.
+
+Une seule couche d'ombre produit un halo gris ; deux produisent une élévation
+crédible.
+
+La variante `info` conserve son fond teinté et son liseré gauche, sans ombre :
+elle appartient au flux du texte, elle ne flotte pas.
+
+Rayon porté de 12 à 16 px.
