@@ -18,7 +18,7 @@ so that je sache quand je dépasse.
 ## Découpage en étapes
 
 - [x] **Étape 1** — La table `budgets`, sa migration, et le service
-- [ ] **Étape 2** — L'écran de définition : chaque catégorie avec son champ (AC 1, 2, 4)
+- [x] **Étape 2** — L'écran de définition : chaque catégorie avec son champ (AC 1, 2, 4)
 - [ ] **Étape 3** — La reconduction d'un mois sur l'autre (AC 3)
 
 ## Dev Notes
@@ -58,9 +58,30 @@ Claude Opus 5
 
 ### Debug Log References
 
-`flutter analyze` : aucun problème. `flutter test` : 126 tests au vert.
+`flutter analyze` : aucun problème. `flutter test` : 133 tests au vert.
 
 ### Completion Notes List
+
+**Étape 2 — l'écran.** Les huit catégories, chacune avec son champ, et le total
+alloué qui suit la saisie sans attendre l'enregistrement — on voit ce qu'on est
+en train de décider.
+
+Trois points :
+
+- **Un champ vide affiche un tiret, jamais « 0 ».** Ne rien allouer n'est pas
+  allouer zéro, et la nuance porte : une catégorie sans enveloppe n'aura pas de
+  barre, une à zéro serait perpétuellement dépassée.
+- **Le préremplissage n'a lieu qu'une fois.** Le réappliquer à chaque rendu
+  écraserait ce que l'utilisateur est en train de taper.
+- **Vider une enveloppe la retire.** Revenir en arrière doit être possible.
+
+Le lien « Voir mon budget » de la liste des dépenses mène enfin quelque part.
+
+Le sélecteur de mois de la spécification `OBJ-09-1` n'est pas repris : aucun
+critère ne le demande, et ajuster le budget d'un mois écoulé n'a pas de sens.
+L'écran travaille sur le mois en cours.
+
+7 tests, 133 au total.
 
 **Étape 1 — la table et le service.** Une ligne par catégorie et par mois, avec
 une contrainte d'unicité sur ce couple : c'est ce qui permet de changer de

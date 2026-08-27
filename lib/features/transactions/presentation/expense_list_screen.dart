@@ -193,12 +193,7 @@ class _ExpenseListScreenState extends ConsumerState<ExpenseListScreen> {
               ),
               child: SecondaryButton(
                 label: 'Voir mon budget',
-                // TODO(budget): router vers 02.3 quand la story 2.4 existera.
-                onPressed: () => AppToast.show(
-                  context,
-                  'Le budget mensuel arrive au prochain lot.',
-                  type: ToastType.info,
-                ),
+                onPressed: () => context.push(Routes.budget),
               ),
             ),
           ],

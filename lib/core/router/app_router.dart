@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import '../../features/auth/presentation/login_screen.dart';
 import '../../features/auth/presentation/register_screen.dart';
 import '../../features/auth/presentation/welcome_screen.dart';
+import '../../features/budget/presentation/budget_screen.dart';
 import '../../features/dashboard/presentation/dashboard_screen.dart';
 import '../../features/onboarding/presentation/onboarding_goal_screen.dart';
 import '../../features/onboarding/presentation/onboarding_profile_screen.dart';
@@ -28,6 +29,7 @@ abstract final class Routes {
   static const expenses = '/depenses';
   static const expenseNew = '/depenses/ajouter';
   static const expenseEdit = '/depenses/modifier';
+  static const budget = '/budget';
 
   static const simulator = '/simulateur';
   static const simulationResult = '/simulateur/resultat';
@@ -81,6 +83,10 @@ final appRouter = GoRouter(
       builder: (context, state) => ExpenseEntryScreen(
         existing: state.extra is Transaction ? state.extra! as Transaction : null,
       ),
+    ),
+    GoRoute(
+      path: Routes.budget,
+      builder: (context, state) => const BudgetScreen(),
     ),
     GoRoute(
       path: Routes.simulator,
