@@ -65,15 +65,16 @@ development_status:
 
   # Epic 2 — Suivi des Dépenses, Budget & Santé Financière
   #
-  # À REPRENDRE EN 2.4 : le critère 5 de la story 2.3 demande que le budget de
+  # À REPRENDRE EN 2.5 : le critère 5 de la story 2.3 demande que le budget de
   # la catégorie soit recalculé après une suppression. Les budgets n'existaient
-  # pas au moment de sa clôture ; cette clause est à honorer et à tester avec
-  # la story 2.4.
+  # pas au moment de sa clôture. La story 2.4 les pose, mais c'est la 2.5 qui
+  # introduit la comparaison dépensé / enveloppe — c'est donc là qu'un recalcul
+  # a un sens, et là qu'il doit être testé.
   epic-2: in-progress
   2-1-saisie-d-une-depense: review
   2-2-liste-des-depenses-filtrable: review
   2-3-modification-et-suppression-d-une-depense: review
-  2-4-definition-d-un-budget-mensuel-par-categorie: backlog
+  2-4-definition-d-un-budget-mensuel-par-categorie: in-progress
   2-5-ecart-entre-depenses-reelles-et-budget: backlog
   2-6-alerte-de-seuil-budgetaire: backlog
   2-7-score-de-sante-financiere: backlog

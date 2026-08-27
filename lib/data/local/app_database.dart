@@ -30,7 +30,31 @@ class Transactions extends Table {
       dateTime().withDefault(currentDateAndTime)();
 }
 
-@DriftDatabase(tables: [Transactions])
+/// Enveloppe mensuelle attribuée à une catégorie.
+///
+/// Une ligne par catégorie et par mois : c'est ce qui permet de changer de
+/// budget d'un mois à l'autre sans réécrire l'historique.
+class Budgets extends Table {
+  IntColumn get id => integer().autoIncrement()();
+
+  /// Identifiant de catégorie — voir `core/constants/expense_categories.dart`.
+  TextColumn get categoryId => text().withLength(min: 1, max: 32)();
+
+  /// Enveloppe en FCFA. Entier, comme tout montant.
+  IntColumn get monthlyLimit => integer()();
+
+  /// Mois concerné, ramené à son premier jour.
+  DateTimeColumn get month => dateTime()();
+
+  @override
+  List<Set<Column<Object>>> get uniqueKeys => [
+        // Une seule enveloppe par catégorie et par mois : sans cette
+        // contrainte, deux enregistrements successifs en créeraient deux.
+        {categoryId, month},
+      ];
+}
+
+@DriftDatabase(tables: [Transactions, Budgets])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_open());
 
@@ -38,7 +62,16 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.executor);
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
+
+  @override
+  MigrationStrategy get migration => MigrationStrategy(
+        onUpgrade: (m, from, to) async {
+          // Une base v1 existe déjà sur les appareils : la table des budgets
+          // s'ajoute sans toucher aux dépenses déjà saisies.
+          if (from < 2) await m.createTable(budgets);
+        },
+      );
 }
 
 /// Ouvre le fichier de base dans le répertoire de documents de l'application.
