@@ -10,6 +10,7 @@ import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_typography.dart';
 import '../../../core/utils/currency.dart';
 import '../../../core/utils/dates.dart';
+import '../../../data/local/app_database.dart';
 import '../../../shared/widgets/widgets.dart';
 import '../domain/expense_grouping.dart';
 import '../providers/transactions_provider.dart';
@@ -54,6 +55,16 @@ class _ExpenseListScreenState extends ConsumerState<ExpenseListScreen> {
 
     ref.invalidate(filteredExpensesProvider);
     AppToast.show(context, 'Dépense ajoutée');
+  }
+
+  /// Ouvre une dépense existante pour la corriger.
+  Future<void> _editExpense(Transaction expense) async {
+    final changed =
+        await context.push<bool>(Routes.expenseEdit, extra: expense);
+    if (!mounted || changed != true) return;
+
+    ref.invalidate(filteredExpensesProvider);
+    AppToast.show(context, 'Dépense modifiée');
   }
 
   @override
@@ -142,7 +153,10 @@ class _ExpenseListScreenState extends ConsumerState<ExpenseListScreen> {
                         categoryId: filter.categoryId,
                         onAdd: _addExpense,
                       )
-                    : _GroupedList(days: groupByDay(items)),
+                    : _GroupedList(
+                        days: groupByDay(items),
+                        onExpenseTap: _editExpense,
+                      ),
               ),
             ),
             // S5 — Passage au budget.
@@ -172,9 +186,10 @@ class _ExpenseListScreenState extends ConsumerState<ExpenseListScreen> {
 
 /// La liste, groupée par journée.
 class _GroupedList extends StatelessWidget {
-  const _GroupedList({required this.days});
+  const _GroupedList({required this.days, required this.onExpenseTap});
 
   final List<ExpenseDay> days;
+  final ValueChanged<Transaction> onExpenseTap;
 
   @override
   Widget build(BuildContext context) {
@@ -188,16 +203,20 @@ class _GroupedList extends StatelessWidget {
         AppSpacing.xl,
       ),
       itemCount: days.length,
-      itemBuilder: (context, index) => _DaySection(day: days[index]),
+      itemBuilder: (context, index) => _DaySection(
+        day: days[index],
+        onExpenseTap: onExpenseTap,
+      ),
     );
   }
 }
 
 /// Une journée : son en-tête, puis ses dépenses dans une carte.
 class _DaySection extends StatelessWidget {
-  const _DaySection({required this.day});
+  const _DaySection({required this.day, required this.onExpenseTap});
 
   final ExpenseDay day;
+  final ValueChanged<Transaction> onExpenseTap;
 
   @override
   Widget build(BuildContext context) {
@@ -245,6 +264,7 @@ class _DaySection extends StatelessWidget {
                     categoryId: day.expenses[i].categoryId,
                     amount: day.expenses[i].amount,
                     note: day.expenses[i].note,
+                    onTap: () => onExpenseTap(day.expenses[i]),
                   ),
                 ],
               ],

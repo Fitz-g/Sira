@@ -8,6 +8,7 @@ import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_typography.dart';
 import '../../../core/utils/currency.dart';
 import '../../../core/utils/currency_input_formatter.dart';
+import '../../../data/local/app_database.dart';
 import '../../../data/models/result.dart';
 import '../../../shared/widgets/widgets.dart';
 import '../providers/transactions_provider.dart';
@@ -18,7 +19,13 @@ import '../providers/transactions_provider.dart';
 /// seul, les catégories défilent sous le pouce, la note est facultative. Chaque
 /// geste économisé est une chance de plus que l'habitude tienne.
 class ExpenseEntryScreen extends ConsumerStatefulWidget {
-  const ExpenseEntryScreen({super.key});
+  const ExpenseEntryScreen({super.key, this.existing});
+
+  /// Dépense à modifier. Absente, l'écran en crée une nouvelle.
+  ///
+  /// Un même formulaire pour les deux cas : deux écrans divergeraient à la
+  /// première évolution — un champ ajouté d'un côté et pas de l'autre.
+  final Transaction? existing;
 
   @override
   ConsumerState<ExpenseEntryScreen> createState() => _ExpenseEntryScreenState();
@@ -30,6 +37,21 @@ class _ExpenseEntryScreenState extends ConsumerState<ExpenseEntryScreen> {
 
   String? _categoryId;
   bool _isSaving = false;
+
+  bool get _isEditing => widget.existing != null;
+
+  @override
+  void initState() {
+    super.initState();
+    final existing = widget.existing;
+    if (existing == null) return;
+
+    // Le montant passe par le formateur : il doit s'afficher comme si
+    // l'utilisateur venait de le taper.
+    _amountController.text = Currency.formatAmount(existing.amount);
+    _noteController.text = existing.note ?? '';
+    _categoryId = existing.categoryId;
+  }
 
   @override
   void dispose() {
@@ -44,21 +66,38 @@ class _ExpenseEntryScreenState extends ConsumerState<ExpenseEntryScreen> {
     if (_amount <= 0 || _isSaving) return;
     setState(() => _isSaving = true);
 
-    final result = await ref.read(transactionsServiceProvider).add(
-          amount: _amount,
-          // Sans choix explicite, la dépense atterrit dans « Autre » : mieux
-          // vaut une dépense mal classée qu'une dépense jamais saisie.
-          categoryId: _categoryId ?? 'other',
-          note: _noteController.text,
-        );
+    final service = ref.read(transactionsServiceProvider);
+    final existing = widget.existing;
+
+    // Sans choix explicite, la dépense atterrit dans « Autre » : mieux vaut une
+    // dépense mal classée qu'une dépense jamais saisie.
+    final categoryId = _categoryId ?? 'other';
+
+    final Result<Object> result = existing == null
+        ? await service.add(
+            amount: _amount,
+            categoryId: categoryId,
+            note: _noteController.text,
+          )
+        : await service.update(
+            id: existing.id,
+            amount: _amount,
+            categoryId: categoryId,
+            note: _noteController.text,
+            // La date d'origine est conservée : modifier un montant ne doit pas
+            // déplacer la dépense dans le temps.
+            date: existing.date,
+          );
 
     if (!mounted) return;
     setState(() => _isSaving = false);
 
     switch (result) {
       case Success():
-        // Le mois affiché ailleurs doit refléter la nouvelle dépense.
-        ref.invalidate(currentMonthExpensesProvider);
+        // Les totaux affichés ailleurs doivent refléter le changement.
+        ref
+          ..invalidate(currentMonthExpensesProvider)
+          ..invalidate(filteredExpensesProvider);
         Navigator.of(context).pop(true);
       case Failure(:final message):
         AppToast.show(context, message, type: ToastType.error);
@@ -73,7 +112,7 @@ class _ExpenseEntryScreenState extends ConsumerState<ExpenseEntryScreen> {
         child: Column(
           children: [
             PageHeader(
-              title: 'Nouvelle dépense',
+              title: _isEditing ? 'Modifier la dépense' : 'Nouvelle dépense',
               leading: HeaderLeadingAction.close,
               onLeadingPressed: () => Navigator.of(context).pop(),
             ),
@@ -136,7 +175,8 @@ class _ExpenseEntryScreenState extends ConsumerState<ExpenseEntryScreen> {
                 AppSpacing.md,
               ),
               child: PrimaryButton(
-                label: 'Enregistrer',
+                label: _isEditing ? 'Enregistrer les modifications'
+                    : 'Enregistrer',
                 isLoading: _isSaving,
                 onPressed: _amount > 0 ? _save : null,
               ),

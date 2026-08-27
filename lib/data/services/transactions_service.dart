@@ -43,6 +43,40 @@ class TransactionsService {
     }
   }
 
+  /// Modifie une dépense existante.
+  ///
+  /// Retourne `false` si l'identifiant ne correspond à rien — une dépense
+  /// supprimée depuis un autre écran, par exemple.
+  Future<Result<bool>> update({
+    required int id,
+    required int amount,
+    required String categoryId,
+    String? note,
+    DateTime? date,
+  }) async {
+    if (amount <= 0) {
+      return const Failure('Entre un montant supérieur à zéro.');
+    }
+
+    try {
+      final count = await (_db.update(_db.transactions)
+            ..where((t) => t.id.equals(id)))
+          .write(
+        TransactionsCompanion(
+          amount: Value(amount),
+          categoryId: Value(categoryId.isEmpty ? 'other' : categoryId),
+          note: Value(note?.trim().isEmpty ?? true ? null : note!.trim()),
+          date: date == null ? const Value.absent() : Value(date),
+        ),
+      );
+      return Success(count > 0);
+    } catch (_) {
+      return const Failure(
+        'Hmm, la modification a échoué. Réessaie dans un instant.',
+      );
+    }
+  }
+
   /// Dépenses d'un mois donné, de la plus récente à la plus ancienne.
   Future<Result<List<Transaction>>> forMonth(DateTime month) async {
     try {

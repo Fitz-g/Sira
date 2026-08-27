@@ -153,4 +153,89 @@ void main() {
       expect(((await service.remove(999)) as Success<bool>).data, isFalse);
     });
   });
+
+  group('update', () {
+    test('remplace montant, catégorie et note', () async {
+      final added = await service.add(
+        amount: 5000,
+        categoryId: 'food',
+        note: 'Déjeuner',
+        date: DateTime(2026, 8, 15),
+      );
+      final id = (added as Success<int>).data;
+
+      final updated = await service.update(
+        id: id,
+        amount: 7500,
+        categoryId: 'transport',
+        note: 'Taxi',
+        date: DateTime(2026, 8, 15),
+      );
+      expect((updated as Success<bool>).data, isTrue);
+
+      final result = await service.forMonth(DateTime(2026, 8));
+      final row = (result as Success<List<Transaction>>).data.single;
+
+      expect(row.amount, 7500);
+      expect(row.categoryId, 'transport');
+      expect(row.note, 'Taxi');
+    });
+
+    test('ne crée pas de doublon', () async {
+      final added = await service.add(amount: 5000, categoryId: 'food');
+      final id = (added as Success<int>).data;
+
+      await service.update(id: id, amount: 9000, categoryId: 'food');
+
+      final result = await service.forMonth(DateTime.now());
+      expect((result as Success<List<Transaction>>).data, hasLength(1));
+    });
+
+    test('refuse un montant nul', () async {
+      final added = await service.add(amount: 5000, categoryId: 'food');
+      final id = (added as Success<int>).data;
+
+      final updated = await service.update(
+        id: id,
+        amount: 0,
+        categoryId: 'food',
+      );
+      expect(updated.isSuccess, isFalse);
+
+      // La dépense d'origine est intacte.
+      final result = await service.forMonth(DateTime.now());
+      expect(
+        (result as Success<List<Transaction>>).data.single.amount,
+        5000,
+      );
+    });
+
+    test('signale un identifiant inconnu sans échouer', () async {
+      final updated = await service.update(
+        id: 999,
+        amount: 1000,
+        categoryId: 'food',
+      );
+      expect((updated as Success<bool>).data, isFalse);
+    });
+
+    test('vider la note la supprime', () async {
+      final added = await service.add(
+        amount: 5000,
+        categoryId: 'food',
+        note: 'À effacer',
+      );
+      final id = (added as Success<int>).data;
+
+      await service.update(
+        id: id,
+        amount: 5000,
+        categoryId: 'food',
+        note: '',
+      );
+
+      final result = await service.forMonth(DateTime.now());
+      expect((result as Success<List<Transaction>>).data.single.note, isNull);
+    });
+  });
 }

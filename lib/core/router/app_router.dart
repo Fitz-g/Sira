@@ -7,6 +7,7 @@ import '../../features/dashboard/presentation/dashboard_screen.dart';
 import '../../features/onboarding/presentation/onboarding_goal_screen.dart';
 import '../../features/onboarding/presentation/onboarding_profile_screen.dart';
 import '../../features/onboarding/presentation/onboarding_situation_screen.dart';
+import '../../data/local/app_database.dart';
 import '../../features/simulation/domain/simulation_models.dart';
 import '../../features/transactions/presentation/expense_entry_screen.dart';
 import '../../features/transactions/presentation/expense_list_screen.dart';
@@ -26,6 +27,7 @@ abstract final class Routes {
   static const dashboard = '/accueil';
   static const expenses = '/depenses';
   static const expenseNew = '/depenses/ajouter';
+  static const expenseEdit = '/depenses/modifier';
 
   static const simulator = '/simulateur';
   static const simulationResult = '/simulateur/resultat';
@@ -71,6 +73,14 @@ final appRouter = GoRouter(
     GoRoute(
       path: Routes.expenseNew,
       builder: (context, state) => const ExpenseEntryScreen(),
+    ),
+    GoRoute(
+      path: Routes.expenseEdit,
+      // La dépense à modifier voyage en `extra` : sans elle, l'écran retombe
+      // sur une saisie neuve plutôt que d'échouer.
+      builder: (context, state) => ExpenseEntryScreen(
+        existing: state.extra is Transaction ? state.extra! as Transaction : null,
+      ),
     ),
     GoRoute(
       path: Routes.simulator,
