@@ -19,7 +19,7 @@ so that mes chiffres restent justes.
 ## Découpage en étapes
 
 - [x] **Étape 1** — Ouvrir une dépense en édition, préremplie, et l'enregistrer (AC 1, 2)
-- [ ] **Étape 2** — Le balayage vers la gauche et la confirmation (AC 3, 4)
+- [x] **Étape 2** — Le balayage vers la gauche et la confirmation (AC 3, 4)
 - [ ] **Étape 3** — Recalcul de ce qui dépend d'une dépense modifiée ou effacée (AC 5)
 
 ## Dev Notes
@@ -57,6 +57,25 @@ Claude Opus 5
 ### Debug Log References
 
 ### Completion Notes List
+
+**Étape 2 — le balayage.** Vers la gauche seulement : le balayage inverse sert
+au retour arrière sur iOS, on ne le détourne pas.
+
+La confirmation **nomme la dépense visée** — catégorie et montant. Effacer est
+irréversible, un balayage part facilement d'un défilement mal accroché, et
+plusieurs lignes d'une même journée se ressemblent.
+
+**Contrainte technique de `Dismissible`.** Il exige qu'une ligne écartée quitte
+l'arbre dans la même frame. Notre effacement passe par la base puis par le
+provider, donc une frame plus tard — laisser le widget s'écarter levait une
+assertion. La suppression a donc lieu pendant la confirmation, qui répond
+toujours `false` : c'est le rafraîchissement de la liste qui retire la ligne,
+pas le geste.
+
+En cas d'échec, la ligne se remet en place et le message le dit : rien n'a été
+effacé.
+
+5 tests ajoutés, 107 au total.
 
 **Étape 1 — l'édition.** Toucher une ligne ouvre le formulaire, prérempli. Le
 même écran sert à créer et à modifier : deux écrans divergeraient à la première

@@ -9,6 +9,8 @@ import 'package:sira/core/utils/dates.dart';
 import 'package:sira/data/local/app_database.dart';
 import 'package:sira/data/services/transactions_service.dart';
 import 'package:sira/features/transactions/presentation/expense_list_screen.dart';
+import 'package:sira/data/models/result.dart';
+import 'package:sira/features/transactions/presentation/widgets/dismissible_expense.dart';
 import 'package:sira/features/transactions/presentation/widgets/expense_row.dart';
 import 'package:sira/features/transactions/providers/transactions_provider.dart';
 import 'package:sira/shared/widgets/widgets.dart';
@@ -257,5 +259,95 @@ void main() {
     await _pumpList(tester);
 
     expect(find.text('Voir mon budget'), findsOneWidget);
+  });
+
+  group('suppression', () {
+    /// Balaie la première dépense vers la gauche.
+    Future<void> swipeFirst(WidgetTester tester) async {
+      await tester.drag(
+        find.byType(DismissibleExpense).first,
+        const Offset(-500, 0),
+      );
+      await tester.pumpAndSettle();
+    }
+
+    testWidgets('demande confirmation avant d’effacer', (tester) async {
+      final service = TransactionsService(db);
+      await service.add(amount: 5000, categoryId: 'food');
+
+      await _pumpList(tester);
+      await swipeFirst(tester);
+
+      // Effacer est irréversible, et un balayage part facilement d'un
+      // défilement mal accroché.
+      expect(find.text('Supprimer cette dépense ?'), findsOneWidget);
+      expect(find.text('Annuler'), findsOneWidget);
+      expect(find.text('Supprimer'), findsOneWidget);
+    });
+
+    testWidgets('nomme la dépense visée dans la confirmation',
+        (tester) async {
+      final service = TransactionsService(db);
+      await service.add(amount: 12500, categoryId: 'transport');
+
+      await _pumpList(tester);
+      await swipeFirst(tester);
+
+      // Le rappel évite d'effacer la mauvaise ligne quand plusieurs se
+      // ressemblent.
+      expect(
+        find.textContaining('Transport — ${Currency.format(12500)}'),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('annuler laisse la dépense en place', (tester) async {
+      final service = TransactionsService(db);
+      await service.add(amount: 5000, categoryId: 'food');
+
+      await _pumpList(tester);
+      await swipeFirst(tester);
+      await tester.tap(find.text('Annuler'));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(DismissibleExpense), findsOneWidget);
+
+      final rows = (await TransactionsService(db).forMonth(DateTime.now()))
+          as Success<List<Transaction>>;
+      expect(rows.data, hasLength(1));
+    });
+
+    testWidgets('confirmer efface la dépense et met le total à jour',
+        (tester) async {
+      final service = TransactionsService(db);
+      await service.add(amount: 5000, categoryId: 'food');
+      await service.add(amount: 3000, categoryId: 'transport');
+
+      await _pumpList(tester);
+      expect(find.text(Currency.format(8000)), findsWidgets);
+
+      await swipeFirst(tester);
+      await tester.tap(find.text('Supprimer'));
+      await tester.pumpAndSettle();
+
+      final rows = (await TransactionsService(db).forMonth(DateTime.now()))
+          as Success<List<Transaction>>;
+      expect(rows.data, hasLength(1));
+      expect(find.byType(DismissibleExpense), findsOneWidget);
+    });
+
+    testWidgets('effacer la dernière dépense ramène l’invitation',
+        (tester) async {
+      final service = TransactionsService(db);
+      await service.add(amount: 5000, categoryId: 'food');
+
+      await _pumpList(tester);
+      await swipeFirst(tester);
+      await tester.tap(find.text('Supprimer'));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(DismissibleExpense), findsNothing);
+      expect(find.textContaining('Beau début'), findsOneWidget);
+    });
   });
 }

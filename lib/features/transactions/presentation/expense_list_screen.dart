@@ -11,10 +11,11 @@ import '../../../core/theme/app_typography.dart';
 import '../../../core/utils/currency.dart';
 import '../../../core/utils/dates.dart';
 import '../../../data/local/app_database.dart';
+import '../../../data/models/result.dart';
 import '../../../shared/widgets/widgets.dart';
 import '../domain/expense_grouping.dart';
 import '../providers/transactions_provider.dart';
-import 'widgets/expense_row.dart';
+import 'widgets/dismissible_expense.dart';
 
 /// Identifiant du chip « Toutes » — ne correspond à aucune catégorie réelle.
 const _allCategories = '__toutes__';
@@ -55,6 +56,28 @@ class _ExpenseListScreenState extends ConsumerState<ExpenseListScreen> {
 
     ref.invalidate(filteredExpensesProvider);
     AppToast.show(context, 'Dépense ajoutée');
+  }
+
+  /// Efface une dépense déjà confirmée par l'utilisateur.
+  Future<bool> _deleteExpense(Transaction expense) async {
+    final result =
+        await ref.read(transactionsServiceProvider).remove(expense.id);
+    if (!mounted) return false;
+
+    switch (result) {
+      case Success():
+        // Les totaux de la liste comme du tableau de bord doivent suivre.
+        ref
+          ..invalidate(filteredExpensesProvider)
+          ..invalidate(currentMonthExpensesProvider);
+        AppToast.show(context, 'Dépense supprimée');
+        return true;
+      case Failure(:final message):
+        AppToast.show(context, message, type: ToastType.error);
+        // La ligne se remet en place : rien n'a été effacé.
+        ref.invalidate(filteredExpensesProvider);
+        return false;
+    }
   }
 
   /// Ouvre une dépense existante pour la corriger.
@@ -156,6 +179,7 @@ class _ExpenseListScreenState extends ConsumerState<ExpenseListScreen> {
                     : _GroupedList(
                         days: groupByDay(items),
                         onExpenseTap: _editExpense,
+                        onExpenseDelete: _deleteExpense,
                       ),
               ),
             ),
@@ -186,10 +210,15 @@ class _ExpenseListScreenState extends ConsumerState<ExpenseListScreen> {
 
 /// La liste, groupée par journée.
 class _GroupedList extends StatelessWidget {
-  const _GroupedList({required this.days, required this.onExpenseTap});
+  const _GroupedList({
+    required this.days,
+    required this.onExpenseTap,
+    required this.onExpenseDelete,
+  });
 
   final List<ExpenseDay> days;
   final ValueChanged<Transaction> onExpenseTap;
+  final Future<bool> Function(Transaction) onExpenseDelete;
 
   @override
   Widget build(BuildContext context) {
@@ -206,6 +235,7 @@ class _GroupedList extends StatelessWidget {
       itemBuilder: (context, index) => _DaySection(
         day: days[index],
         onExpenseTap: onExpenseTap,
+        onExpenseDelete: onExpenseDelete,
       ),
     );
   }
@@ -213,10 +243,15 @@ class _GroupedList extends StatelessWidget {
 
 /// Une journée : son en-tête, puis ses dépenses dans une carte.
 class _DaySection extends StatelessWidget {
-  const _DaySection({required this.day, required this.onExpenseTap});
+  const _DaySection({
+    required this.day,
+    required this.onExpenseTap,
+    required this.onExpenseDelete,
+  });
 
   final ExpenseDay day;
   final ValueChanged<Transaction> onExpenseTap;
+  final Future<bool> Function(Transaction) onExpenseDelete;
 
   @override
   Widget build(BuildContext context) {
@@ -260,11 +295,10 @@ class _DaySection extends StatelessWidget {
                       height: 1,
                       color: AppColors.neutral100,
                     ),
-                  ExpenseRow(
-                    categoryId: day.expenses[i].categoryId,
-                    amount: day.expenses[i].amount,
-                    note: day.expenses[i].note,
+                  DismissibleExpense(
+                    expense: day.expenses[i],
                     onTap: () => onExpenseTap(day.expenses[i]),
+                    onDelete: () => onExpenseDelete(day.expenses[i]),
                   ),
                 ],
               ],
