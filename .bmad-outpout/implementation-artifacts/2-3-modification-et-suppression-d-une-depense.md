@@ -1,6 +1,6 @@
 # Story 2.3: Modification et suppression d'une dépense
 
-Status: in-progress
+Status: review
 
 ## Story
 
@@ -20,7 +20,7 @@ so that mes chiffres restent justes.
 
 - [x] **Étape 1** — Ouvrir une dépense en édition, préremplie, et l'enregistrer (AC 1, 2)
 - [x] **Étape 2** — Le balayage vers la gauche et la confirmation (AC 3, 4)
-- [ ] **Étape 3** — Recalcul de ce qui dépend d'une dépense modifiée ou effacée (AC 5)
+- [x] **Étape 3** — Recalcul de ce qui dépend d'une dépense modifiée ou effacée (AC 5)
 
 ## Dev Notes
 
@@ -57,6 +57,22 @@ Claude Opus 5
 ### Debug Log References
 
 ### Completion Notes List
+
+**Étape 3 — la propagation.** Le code invalidait déjà les deux providers après
+une suppression comme après une modification, mais rien ne le prouvait. Sept
+tests le verrouillent désormais, au niveau des providers plutôt que des écrans —
+c'est là que se joue le contrat.
+
+Ils couvrent notamment ce qui ne doit **pas** bouger : le tableau de bord ignore
+le mois consulté dans la liste et la catégorie qui y est filtrée. Ce sont deux
+providers distincts, et sans test rien ne garantissait qu'ils le restent.
+
+**Une part du critère 5 est reportée.** Il demande que « le budget de sa
+catégorie » soit recalculé. Les budgets n'existent pas — ils arrivent avec la
+story 2.4. Cette clause sera honorée là-bas, et le recalcul devra être testé au
+moment où il aura un objet.
+
+7 tests ajoutés, 114 au total.
 
 **Étape 2 — le balayage.** Vers la gauche seulement : le balayage inverse sert
 au retour arrière sur iOS, on ne le détourne pas.
